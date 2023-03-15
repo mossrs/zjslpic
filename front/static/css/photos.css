@@ -1,0 +1,27 @@
+.first_div{
+    width: 250px; height:250px; background-color: rgba(199, 199, 199, 0.6); border-radius: 8px; text-align: center; display: inline-block; margin: 20px;
+}
+.second_div{
+    overflow: hidden; height: 75%; width: 90%;border-radius: 8px; display: inline-block; background-color: rgb(242, 244, 246, 0.8); margin-top: 12px;
+}
+.the_a{
+    margin: 0px;
+}
+.the_img{
+    width: 100%; align-self:center; display: inline-block;position: relative; top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+.the_img_heightmax{
+    width: 100%; align-self:center; display: inline-block;position: relative; top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+#first_p{
+    text-align: left; margin-left: 14px; color: black; font-size: 17px;
+}
+.second_p{
+    display: inline; float: left; margin-left: 16px; font-size: 10px; color: #777;
+}
+.third_p{
+    display: inline; float: right; margin-right: 16px; font-size: 10px; color: #777;width: 120px;text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

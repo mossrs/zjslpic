@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/headercss.css">
+    <link rel="stylesheet" href="static/css/photos.css">
+    <script src="static/js/three.min.js"></script>
+    <script src="static/js/photo-sphere-viewer.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./static/js/jquery.js"></script>
+    <title>浙江 · 诗路文化带</title>
+	<style>
+		#dropbox {
+			width: 720px;
+			height: 150px;
+			line-height: 125px;
+			text-align: center;
+			border: 2px dashed #999;
+			border-radius: 5px;
+			background: #fbfbfb;
+			color: #666;
+		}
+		#preview img{
+			height: 80px;
+			margin: 7px;
+			border: 1px solid #666;
+			border-radius: 4px;
+			box-shadow: 3px 3px 3px #bbb;
+		}
+		#outbox{
+			display: inline-block;
+			position: relative;
+			overflow: hidden;
+		}
+		#fileUpload{
+			position: absolute;
+			left: 0px;
+			font-size: 60px;
+			opacity: 0;
+			height:100%;
+		}
+		#showFile{
+			width:100%;
+			height:100%;
+			display:none;
+			position:fixed;
+			top:0;
+			left:0;
+			background:rgba(0,0,0,0.7);
+			z-index:2;
+		}
+		.strDiv{
+			display:inline-block;
+			margin-right:30px;
+		}
+		.strSpan{
+			margin-left:10px;
+			overflow:hidden;
+			margin-top:-8px;
+			cursor:pointer;
+			height:50px;
+			font-size: 12px;
+		}
+        .header-out{
+            position:fixed;
+            background-color: rgb(254, 254, 254);
+            width: 100%;
+            box-shadow: 0 2px 10px 0 rgb(23 44 45 / 30%);
+            z-index: 999;
+        }
+        .header-out-a{
+            color: black;
+            font-size: 17px;
+            line-height: 24px;
+            font-weight: 600;
+            margin-right: 18px;
+            margin-left: 18px;
+            transition-property: color;
+            transition-duration: 0.3s;
+            transition-timing-function: ease;
+            transition-delay: 0s;
+            text-decoration: none;
+        }
+        .header-in{
+            position:fixed;
+            background-color: rgb(254, 254, 254,0);
+            width: 100%;
+            z-index: 1;
+        }
+        .header-in-a{
+            font-size: 17px;
+            line-height: 24px;
+            color: rgb(255, 255, 255);
+            font-weight: 600;
+            margin-right: 18px;
+            margin-left: 18px;
+            transition-property: color;
+            transition-duration: 0.3s;
+            transition-timing-function: ease;
+            transition-delay: 0s;
+            text-decoration: none;
+        }
+        #container {
+            width: 100%;
+            min-height: 500px;
+            max-height: 800px;
+            background-color: rgb(133, 133, 133);
+        }
+        .upload-btn{
+            width: 245px;
+            height: 48px;
+            font-size: 20px;
+            line-height: 24px;
+            border: none;
+            color: white;
+            background-image: linear-gradient(135deg,#7ba5fb,#14ffe0);
+            border-radius:25px;
+        }
+        .blank1{
+            padding: 90px;
+        }
+        .blank2{
+            padding: 20px;
+        }
+        .blank3{
+            padding: 150px;
+        }
+        .upload-btn:hover{
+            background-image: linear-gradient(135deg,#739ce5,#13e5c2);
+            transition-property: opacity;
+            transition-duration: 0.5s;
+            transition-timing-function: ease;
+            transition-delay: 0s;
+        }
+        .slogan{
+            font-size: 3.5rem;
+            line-height: 55px;
+            color: white;
+            margin-bottom: 60px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 10px rgb(0 0 0 / 56%);
+        }
+        .info{
+            font-size: 1.2rem;
+            text-align: center;
+            line-height: 1.45rem;
+            color: white;
+            text-shadow: 0 0 10px rgb(0 0 0 / 56%);
+            margin-top: 10px;
+        }
+        .photos-window-top{
+            padding-top: 30px;
+            text-align: center;
+            color: #15dced;
+        }
+        .photos-window-top h3{
+            display: inline-block;
+            padding: 10px;
+            margin-bottom: 30px;
+            border-bottom: #15dced 1px solid;
+        }
+        .photos-window-photos{
+            margin: 0 200px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .photos-card{
+            margin: 20px 8px 30px 8px;
+            width: 250px;
+            height: 250px;
+            min-width: 250px;
+            background-color: rgb(228, 228, 228);
+            border-radius: 8px;
+        }
+        .photos-photo{
+            vertical-align: middle;
+            text-align: center;
+            display: inline-block;
+            border-radius: 5px;
+            width:250px;
+            height:250px;
+            overflow: hidden;
+        }
+        img{
+            width: 100%;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .photos-massage{
+            margin: 5px 2px;
+        }
+        .loader-name{
+            display: inline;
+            float: left;
+            color: rgb(153, 153, 153);
+            font-size: 6px;
+        }
+        .photos-kind{
+            display: inline;
+            float: right;
+            color: rgb(153, 153, 153);
+            font-size: 6px;
+        }
+        .photos-a{
+            margin: auto;
+        }
+        .upload-window{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 500px;
+            width: 800px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+            display: none;
+        }
+        .upload-window-display{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 500px;
+            width: 800px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+        }
+        #upload-window-button-close{
+            width: 18px;
+            height: 18px;
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-weight: 700;
+            line-height: 1;
+            text-decoration: none;
+            color: rgba(0,0,0,.43);
+            cursor: pointer;
+            border: 0;
+            background-color: white;
+        }
+        .overlay{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+            display: none;
+        }
+        .overlay-display{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10000px;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+        }
+        .flowhidden{
+            overflow: hidden;
+        }
+        #upload-window-form{
+            margin: 24px;
+        }
+        .upload-window-p{
+            font-size: 17px;
+            line-height: 19px;
+            font-weight: 600;
+            color: #212121;
+        }
+        #upload-window-inputtext{
+            position: relative;
+            display: inline-block;
+            font-size: 14px;
+            height: 28px;
+            border-radius: 4px;
+            padding: 6px 7px 6px 16px;
+            color: rgb(0, 0, 0, 0.65);
+            border: 1px solid #d9d9d9;
+            transition: all .3s;
+            width: 700px;
+            margin-top: 10px;
+            outline-color: #15dced;
+            caret-color: #15dced;
+        }
+        #upload-window-inputtext:hover{
+            border: 1px solid #15dced;
+        }
+        .div-useto-leave{
+            display: inline-block;
+            width: 70px;
+        }
+        label{
+            font-size: 14px;
+            color: rgb(77, 77, 77);
+            transition: all .3s;
+        }
+        input[type="radio"] {
+            display: none;
+        }
+        input[type='radio'] + label:before{
+            content: "";
+            display: inline-block;
+            border-radius: 100%;
+            width: 8px;
+            height: 8px;
+            border: 2px solid rgb(0, 0, 0, 0.7);
+            margin: 2px;
+            margin-bottom: -0.5px;
+        }
+        input[type='radio']:checked + label:before{
+            border: 2px solid #15dced;
+        }
+        .photos-name{
+            margin-left: -2px;
+            margin-top: -6px;
+        }
+        .login_end_window{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 100px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+            display: none;
+        }
+        .login_end_window_display{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 100px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body id="body">
+    <div class="header" id="header">
+        <div class="header-left">
+            <a class="header-logo" href="javascript:jumpToFour('ZDT')" id="header-logo01">浙东唐诗之路</a>
+            <a class="header-logo" href="javascript:jumpToFour('OJ')" id="header-logo02">瓯江山水诗路</a>
+            <a class="header-logo" href="javascript:jumpToFour('QTJ')" id="header-logo03">钱塘江诗路</a>
+            <a class="header-logo" href="javascript:jumpToFour('DYH')" id="header-logo04">大运河诗路</a>
+        </div>
+        <div class="header-right">
+            <a class="header-text" href="index.html" id="header-logo05">首页</a>
+            <a class="header-myself" href="static/html/log.html" id="header-logo06">登录</a>
+        </div>
+    </div>
+    <div id="container" style="position: absolute; min-width: 1516px; width: 100%"></div>
+    <div style="position: absolute; width: 100%; min-width: 1516px;">
+        <div class="blank1"></div>
+        <div class="slogan">浙江 · 诗路文化带</div>
+        <div class="info" style="font-size: 1rem;">Highlighting The Characteristics Of The Natural Scenery And The Cultural Connotation Of Zhejiang</div>
+        <div class="info" style="font-size: 0.9rem;">体现浙江山水特色，彰显浙江文化内涵&emsp;|&emsp;捻诗作线，串起珠玑字字，化诗成眼，品读山川人间</div>
+        <div class="blank2"></div>
+        <div style="text-align: center;" id="button000">
+            <button id="upload-btn" type="button" class="upload-btn">点击上传</button>
+        </div>
+        <div class="blank3"></div>
+        <div style="background-image: linear-gradient(0deg,#dddddd,#ffffff); padding-bottom: 20px">
+            <div class="photos-window-top"  style="margin-top: 45px;"><h3>用户精选</h3></div>
+            <div style="width: 100%; min-width: 1516px;text-align: center; height: 100%; display: inline-block;">
+                <div style="min-width: 1100px; height: 100%; display: inline-block; margin: 10px 80px;" id="photosbox">
+                    <!-- 图片新增在这里 -->
+                </div>
+            </div>
+            <div id="pageBtnBox">
+                <div style="width: 100px; height: 32px; display: inline-block; margin-left: 100px; margin-right: 15px;" id="changeButton">
+                    <img src="./static/imgs/bg-left.png" alt="" style="height: 24px; width: 24px; position: absolute; margin-left: -40px; margin-top: 5px; cursor: pointer;" class="btnLeftAndRight">
+
+                    <input type="text" style="height: 32px; width: 100px; padding: 0; border-radius: 10px; text-align: center; caret-color:#d9d9d9; border: #cbcbcb solid 1px;" id="findUserPageNum">
+                </div>
+                <div style="width: 70px; height: 32px; display: inline-block; border-radius: 10px; cursor:pointer; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0)">
+                    <p style="user-select: none; font-size: 13px; line-height: 32px; text-align: center; color: #ffffff;" id="findUserPageBtn">页数查找</p>
+                    <img src="./static/imgs/bg-left.png" alt="" style="transform: rotate(180deg); height: 24px; width: 24px; margin-top: -28px;margin-left: 162px; position: absolute; cursor: pointer;" class="btnLeftAndRight">
+
+                </div>
+                <p style="display: inline-block; font-size: 12px; color: #4c4c4c;" id="pageNum">当前 0 / 0 页</p>
+            </div>
+        </div>
+        <div style="display: inline-block; position: fixed; bottom: -90px; right: 0; width: 220px; height: 310px;  z-index: 20" id="the_model_div"></div>
+        <!-- <iframe style="display: inline-block; position: fixed; bottom: -90px; right: 0; width: 220px; height: 310px;border: 0px; z-index: 10" src="static/js/three/examples/zxc.html" allowtransparency="true" id="the_model"></iframe> -->
+
+        <script>
+            var height_window = window.innerHeight;
+            var width_window = window.innerWidth;
+            document.getElementById('container').style.height = height_window+'px'
+            document.getElementsByClassName('blank3')[0].style.padding = height_window - 438
+            var the_model = document.getElementById('the_model');
+            var the_model_div = document.getElementById('the_model_div');
+            var big_or_small = 0;
+            the_model_div.onclick = function (){
+                if(big_or_small==0){
+                    the_model.style.right = width_window/2 - height_window/2 + 'px';
+                    the_model.style.width = height_window + 'px';
+                    the_model.style.height = height_window + 'px' ;
+                    the_model_div.style.right = width_window/2 - height_window/2 + 'px';
+                    the_model_div.style.width = height_window + 'px';
+                    the_model_div.style.height = height_window + 'px' ;
+                    big_or_small=1;
+                }
+                else if(big_or_small==1){
+                    the_model.style.right = '0px';
+                    the_model.style.width = '220px';
+                    the_model.style.height = '310px';
+                    the_model_div.style.right = '0px';
+                    the_model_div.style.width = '220px';
+                    the_model_div.style.height = '310px';
+                    big_or_small=0;
+                }
+            }
+            var newpage = 0
+            var maxpage = 0
+            show_picPageMessage(1)
+            document.getElementById('findUserPageBtn').onclick = function(){
+                page = document.getElementById('findUserPageNum').value
+                show_picPageMessage(page)
+            }
+            document.getElementsByClassName('btnLeftAndRight')[0].onclick = function(){
+                page = newpage - 1
+                if(page<1)page=1
+                show_picPageMessage(page)
+            }
+            document.getElementsByClassName('btnLeftAndRight')[1].onclick = function(){
+                page = newpage + 1
+                if(page>maxpage)page=maxpage
+                show_picPageMessage(page)
+            }
+            function show_picPageMessage(messagePagePic){
+                document.getElementById('photosbox').innerHTML = ''
+                axios({
+                    method: 'GET',
+                    url: ' http://1.117.80.52:8033/pic/photo/getPagePics/'+messagePagePic+'/50',
+                })
+                .then(res =>{
+                    console.log(res.data.data.items);
+                    document.getElementById('pageNum').innerText = '当前 '+res.data.data.currentPage+' / '+res.data.data.totalPage+' 页'
+                    newpage = parseInt(res.data.data.currentPage)
+                    maxpage = parseInt(res.data.data.totalPage)
+                    if(res.data.code==1){
+                        for(var i=0; i<res.data.data.items.length; i++){
+                            var new_photo_box_div = document.createElement('div');
+                            var new_photo_link_a = document.createElement('a');
+                            var new_photo_img = document.createElement('img');
+                            var new_photo_imgdiv = document.createElement('div');
+                            var new_photo_photosname_p = document.createElement('p');
+                            var new_photo_loadername_p = document.createElement('p');
+                            var new_photo_photoskind_p = document.createElement('p');
+                            new_photo_box_div.className = 'first_div';
+                            new_photo_imgdiv.className = 'second_div';
+                            new_photo_link_a.className = 'photos-a';
+                    
+                            new_photo_link_a.href = './static/html/lookphotos.html?photo='+res.data.data.items[i]['url']+'='+res.data.data.items[i]['location']+'='+res.data.data.items[i]['id']+'='+res.data.data.items[i]['name']
+
+                            new_photo_link_a.className = 'the_a';
+                            new_photo_img.src = 'https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com'+res.data.data.items[i]['url']
+                            new_photo_img.className = 'the_img';
+
+                            new_photo_photosname_p.innerText = res.data.data.items[i]['name']
+                            new_photo_loadername_p.innerText = res.data.data.items[i]['id']
+                            new_photo_photoskind_p.innerText = res.data.data.items[i]['location']
+
+                            new_photo_photosname_p.setAttribute('id','first_p');
+                            new_photo_loadername_p.className = 'second_p';
+                            new_photo_photoskind_p.className = 'third_p';
+
+                            new_photo_link_a.appendChild(new_photo_img);
+                            new_photo_imgdiv.appendChild(new_photo_link_a);
+                            new_photo_box_div.appendChild(new_photo_imgdiv);
+                            new_photo_box_div.appendChild(new_photo_photosname_p);
+                            new_photo_box_div.appendChild(new_photo_loadername_p);
+                            new_photo_box_div.appendChild(new_photo_photoskind_p);
+
+                            document.getElementById('photosbox').appendChild(new_photo_box_div);
+                        }}
+                })
+            }
+            document.getElementById('changeButton').style.marginLeft = width_window*0.5 - 150 + 'px'
+
+        //     axios({
+        //     url:'http://1.117.80.52:8033/pic/photo/getPics',
+        //     method: 'GET'
+        // }).then(res =>{
+        //     // console.log(res.data.data[0])
+        //     if(res.status==200){
+        //         for(var i=0; i<res.data.data.length; i++){
+        //             var new_photo_box_div = document.createElement('div');
+        //             var new_photo_link_a = document.createElement('a');
+        //             var new_photo_img = document.createElement('img');
+        //             var new_photo_imgdiv = document.createElement('div');
+        //             var new_photo_photosname_p = document.createElement('p');
+        //             var new_photo_loadername_p = document.createElement('p');
+        //             var new_photo_photoskind_p = document.createElement('p');
+        //             new_photo_box_div.className = 'first_div';
+        //             new_photo_imgdiv.className = 'second_div';
+        //             new_photo_link_a.className = 'photos-a';
+                    
+        //             new_photo_link_a.href = './static/html/lookphotos.html?photo='+res.data.data[i]['url']+'='+res.data.data[i]['location']+'='+res.data.data[i]['id']+'='+res.data.data[i]['name']
+
+        //             new_photo_link_a.className = 'the_a';
+        //             new_photo_img.src = 'https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com'+res.data.data[i]['url']
+        //             new_photo_img.className = 'the_img';
+
+        //             new_photo_photosname_p.innerText = res.data.data[i]['name']
+        //             new_photo_loadername_p.innerText = res.data.data[i]['id']
+        //             new_photo_photoskind_p.innerText = res.data.data[i]['location']
+
+        //             new_photo_photosname_p.setAttribute('id','first_p');
+        //             new_photo_loadername_p.className = 'second_p';
+        //             new_photo_photoskind_p.className = 'third_p';
+
+        //             new_photo_link_a.appendChild(new_photo_img);
+        //             new_photo_imgdiv.appendChild(new_photo_link_a);
+        //             new_photo_box_div.appendChild(new_photo_imgdiv);
+        //             new_photo_box_div.appendChild(new_photo_photosname_p);
+        //             new_photo_box_div.appendChild(new_photo_loadername_p);
+        //             new_photo_box_div.appendChild(new_photo_photoskind_p);
+
+        //             document.getElementById('photosbox').appendChild(new_photo_box_div);
+        //         } 
+        //     }
+        // })
+        </script>
+        </script>
+        <div class="overlay" id="overlay"></div>
+        <div class="login_end_window" id="login_failed_window_301" style="position: fixed;">
+            <button id="upload-window-button-close"><span style="font-size: 25px;">×</span></button>
+            <div style="text-align: center; margin-top: 36px; font-size: 18px; font-weight: 600; color: rgb(61, 61, 61);">请先登录！</div>
+        </div>
+        <div class="upload-window" id="upload-window" style="position: fixed;">
+            <div action="" id="upload-window-form">
+                <button id="upload-window-button-close"><span style="font-size: 25px;">×</span></button>
+                <div style="margin-left: 10px;padding-right: 20px;">
+                    <div style="margin-bottom: 24px; font-size:24px; line-height:33px;font-weight: 600;text-align: left;">上传图片</div>
+                    <div style="margin-bottom: 20px;">
+                        <p class="upload-window-p" style="float:left;">主题：</p>
+                        <p style="float: right; font-size: 10px; color: rgb(0, 0, 0, 0.5); display: none;" id="upload-window-p-rightlogo">主题 / Your Theme</p>
+                        <input type="text" id="upload-window-inputtext" autocapitalize="off" placeholder="主题 / Your Theme">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="margin-bottom: 8px;">
+                            <p class="upload-window-p">类别：</p>
+                        </div>
+                        <div style="text-align:justify;
+                        text-align-last:center;">
+                            <input type="radio" name="kind" value="1" id="zdt"><label for="zdt" id="zdt_label">浙东唐诗之路</label>
+                            <div class="div-useto-leave"></div>
+                            <input type="radio" name="kind" value="2" id="ojss"><label for="ojss" id="ojss_label">瓯江山水诗路</label>
+                            <div class="div-useto-leave"></div>
+                            <input type="radio" name="kind" value="3" id="qtj"><label for="qtj" id="qtj_label">钱塘江诗路</label>
+                            <div class="div-useto-leave"></div>
+                            <input type="radio" name="kind" value="4" id="dyh"><label for="dyh" id="dyh_label">大运河诗路</label>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 14px;">
+                            <p class="upload-window-p">上传文件：</p>
+                        </div>
+                        <div id="outbox">
+                            <div id="dropbox">
+                                <input id="fileUpload" type="file">
+                                <div style="margin-top: 6px;"><span>点击或文件拖放到此处</span></div>
+                            </div>
+                        </div>
+                        <div id="preview"></div>
+                        <div id="showFile">
+                            <div id="innerdiv" style="position:absolute;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="upload-btn" type="button" style="margin-top: 20px; width: 70px; height:40px; font-size: 16px; font-weight: 600;margin-right: -25px;" id="upload_btn">上传</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="height: 40px; background-color: #dddddd;"></div>
+        <div class="footer" style="background-color: #4c4c4c;  width: 100%; min-width: 1516px;; border-bottom: #15dced solid 2px; box-shadow: 0 -6px 10px 0 rgb(23 44 45 / 60%);">
+            <div style="text-align: center;">
+                <div style="height: 8px; width:400px; border-radius: 4px; background-color: white; display: inline-block; margin-top: 15px;">
+                </div>
+            </div>
+            <div style="display: inline-block; padding: 25px 300px; display:flex;">
+                <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.9;">
+                    <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">走进诗路</span>
+                    <ul style="margin-left: 10px;">
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">浙东唐诗之路</a>
+                        <br>
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">瓯江山水诗路</a>
+                        <br>
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">钱塘江诗路</a>
+                        <br>
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">大运河诗路</a>
+                    </ul>
+                </div>
+                <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:1">
+                    <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">用户空间</span>
+                    <ul style="margin-left: 10px;">
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">登陆须知</a>
+                        <br>
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">用户协议</a>
+                    </ul>
+                </div>
+                <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                    <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">诗路同行</span>
+                    <ul style="margin-left: 10px;">
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">创作平台</a>
+                        <br>
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">文风行纪</a>
+                        <br>
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">诗路详情</a>
+                    </ul>
+                </div>
+                <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                    <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">关于我们</span>
+                    <ul style="margin-left: 10px;">
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">联系我们</a>
+                        <br>
+                        <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">传送门</a>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    <script>
+        // var img = document.getElementsByTagName("img");
+        // for(var i=0;i<img.length;i++){
+        //     if(img[i].offsetHeight>=img[i].offsetWidth){
+        //         img[i].style.height = '100%';
+        //     }else{
+        //         img[i].style.width = '100%';
+        //     }
+        // }
+        var div = document.getElementById('container');
+        var PSV = new PhotoSphereViewer({
+                panorama: 'static/imgs/parc-saint-pierre-amiens.jpg',
+                loading_msg:'',
+                anim_speed:'0.5rpm',
+                vertical_anim_speed:'0.5rpm',
+                container: div,
+                time_anim: 3000,
+                navbar: true,
+                navbar_style: {
+                    backgroundColor: 'rgba(58, 67, 77, 0.7)'
+                },
+            });
+        var body_hidden = document.getElementById("body");
+        var header = document.getElementById("header");
+        var header_a01 = document.getElementById("header-logo01");
+        var header_a02 = document.getElementById("header-logo02");
+        var header_a03 = document.getElementById("header-logo03");
+        var header_a04 = document.getElementById("header-logo04");
+        var header_a05 = document.getElementById("header-logo05");
+        var header_a06 = document.getElementById("header-logo06");
+        var upload_btn = document.getElementById("upload-btn");
+        var overlay = document.getElementById("overlay");
+        var upload_window = document.getElementById("upload-window");
+        var upload_window_button_close = document.getElementById("upload-window-button-close");
+        var fourOrNot = 0
+
+        window.onscroll=function(){
+		    //获取滚动条位置
+            var jhlheight=document.documentElement.scrollTop||document.body.scrollTop
+            //判断滚动条位置
+            if(jhlheight>=100||fourOrNot==1){
+                header.className = "header-out"	 //显示按钮
+                header_a01.className = "header-out-a"
+                header_a02.className = "header-out-a" 
+                header_a03.className = "header-out-a" 
+                header_a04.className = "header-out-a" 
+                header_a05.className = "header-out-a" 
+                header_a06.className = "header-out-a" 
+            }else{
+                header.className = "header-in"	//隐藏按钮
+                header_a01.className = "header-in-a"
+                header_a02.className = "header-in-a" 
+                header_a03.className = "header-in-a" 
+                header_a04.className = "header-in-a" 
+                header_a05.className = "header-in-a" 
+                header_a06.className = "header-in-a" 
+            }
+        }
+        upload_btn.onclick = function(){
+            body_hidden.style.overflow = "hidden"
+            overlay.className = "overlay-display"
+            window.scrollTo({     //设置滚动条位置
+                top:0,            //回到顶部
+                behavior:"smooth"   //平滑过渡
+            })
+            // upload_window.className = "upload-window-display"
+            document.getElementById("login_failed_window_301").className = 'login_end_window_display'
+        }
+        upload_window_button_close.onclick = function(){
+            document.getElementById("login_failed_window_301").className = 'login_end_window'
+            overlay.className = "overlay"
+            body_hidden.style.overflow = "auto"
+        }
+        var upload_window_inputtext = document.getElementById("upload-window-inputtext");
+        var upload_window_p_rightlogo = document.getElementById("upload-window-p-rightlogo");
+        upload_window_inputtext.onclick = function(){
+            this.placeholder = ""
+            upload_window_p_rightlogo.style.display = ""
+        }
+        upload_window_inputtext.onblur = function(){
+            this.placeholder = "主题 / Your Theme"
+            upload_window_p_rightlogo.style.display = "none"
+        }
+        var zdt = document.getElementById("zdt");
+        var ojss = document.getElementById("ojss");
+        var qtj = document.getElementById("qtj");
+        var dyh = document.getElementById("dyh");
+        var zdt_label = document.getElementById("zdt_label");
+        var ojss_label = document.getElementById("ojss_label");
+        var qtj_label = document.getElementById("qtj_label");
+        var zdt_label = document.getElementById("zdt_label");
+        var file_category;
+        zdt.onclick = function(){
+            zdt_label.style.color = "#15dced"
+            ojss_label.style.color = "#4d4d4d"
+            qtj_label.style.color = "#4d4d4d"
+            dyh_label.style.color = "#4d4d4d"
+            file_category = '浙东唐诗之路'
+        }
+        ojss.onclick = function(){
+            zdt_label.style.color = "#4d4d4d"
+            ojss_label.style.color = "#15dced"
+            qtj_label.style.color = "#4d4d4d"
+            dyh_label.style.color = "#4d4d4d"
+            file_category = '瓯江山水诗路'
+        }
+        qtj.onclick = function(){
+            zdt_label.style.color = "#4d4d4d"
+            ojss_label.style.color = "#4d4d4d"
+            qtj_label.style.color = "#15dced"
+            dyh_label.style.color = "#4d4d4d"
+            file_category = '钱塘江诗路'  
+        }
+        dyh.onclick = function(){
+            zdt_label.style.color = "#4d4d4d"
+            ojss_label.style.color = "#4d4d4d"
+            qtj_label.style.color = "#4d4d4d"
+            dyh_label.style.color = "#15dced"
+            file_category = '大运河诗路'
+        }
+		var dropbox, fileUpload;
+		dropbox = document.getElementById("dropbox");
+		dropbox.addEventListener("dragenter", dragenter, false);
+		dropbox.addEventListener("dragover", dragover, false);
+		dropbox.addEventListener("dragleave", dragleave, false);
+		dropbox.addEventListener("drop", drop, false);
+
+		fileUpload = document.getElementById("fileUpload");
+		fileUpload.addEventListener("change", readFile, false)
+
+		// 目标进入drop区域
+		function dragenter(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			dropbox.style.background = '#666'
+		}
+		// 目标位于drop区域上方
+		function dragover(e) {
+			e.stopPropagation();
+			e.preventDefault();
+		}
+		// 目标离开drop区域
+		function dragleave(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			dropbox.style.background = '#fbfbfb';
+		}
+		// 目标在drop区域被释放/放置（松开鼠标）
+		function drop(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			dropbox.style.background = '#fbfbfb';
+			var dt = e.dataTransfer;
+			var files = dt.files;
+			handleFiles(files);
+		}
+		// 点击上传文件后的方法
+		function readFile() {
+			handleFiles(this.files);
+		}
+		// 显示缩略图的方法
+		function handleFiles(files) {
+			for (var i = 0; i < files.length; i++) {
+				var file = files[i];
+				var imageType = /^image\//;
+				// 如果文件是图片的话
+				if (imageType.test(file.type)) {
+					//创建div对象和img对象并加入到页面中
+					var strDiv = document.createElement("div");
+					var img = document.createElement("img");
+					var span = document.createElement("div");
+					//为创建的div对象添加样式
+					strDiv.className='strDiv';
+					span.className='strSpan';
+					span.innerHTML=file.name;	//显示图片名称
+					strDiv.appendChild(img);
+					strDiv.appendChild(span);
+					preview.appendChild(strDiv);
+					
+					img.onload=function(){
+						span.style.width=$(img).width()+"px";
+					}
+					
+					//创建预览的大图的img元素
+					var bigimg = document.createElement("img");
+					document.getElementById("innerdiv").appendChild(bigimg);
+					//为缩略图添加点击事件
+					img.onclick = function(){
+						showImg("#showFile", "#innerdiv", $(this),bigimg);
+					}
+                    
+					var reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = (function (aImg) {
+						return function (e) {
+							aImg.src = e.target.result;
+						};
+					})(img);
+				}else{
+					//如果是其他类型的文件的话
+				}
+			}
+		}
+		
+		//点击缩略图查看大图
+		function showImg(showFile, innerdiv, _this,bigimg){
+			var src = _this.attr("src");	//获取当前点击的img元素中的src属性
+			$(bigimg).attr("src", src);		//设置bigimg元素的src属性
+
+			//获取当前点击图片的真实大小，并显示弹出层及大图
+			$("<img/>").attr("src", src).load(function(){
+				var windowW = $(window).width();	//获取当前窗口宽度
+				var windowH = $(window).height();	//获取当前窗口高度
+				var realWidth = this.width;			//获取图片真实宽度
+				var realHeight = this.height;		//获取图片真实高度
+				var imgWidth, imgHeight;
+				var scale = 1;						//缩放尺寸，当图片真实宽度和高度大于窗口宽度和高度时进行缩放
+
+				if(realHeight>windowH*scale) {		//判断图片高度
+					imgHeight = windowH*scale;		//如大于窗口高度，图片高度进行缩放
+					imgWidth = imgHeight/realHeight*realWidth;	//等比例缩放宽度
+					if(imgWidth>windowW*scale) {	//如宽度扔大于窗口宽度
+						imgWidth = windowW*scale;	//再对宽度进行缩放
+					}
+				} else if(realWidth>windowW*scale) {//如图片高度合适，判断图片宽度
+					imgWidth = windowW*scale;		//如大于窗口宽度，图片宽度进行缩放
+					imgHeight = imgWidth/realWidth*realHeight;	//等比例缩放高度
+				} else {							//如果图片真实高度和宽度都符合要求，高宽不变
+					imgWidth = realWidth;
+					imgHeight = realHeight;
+				}
+				$(bigimg).css("width",imgWidth);	//以最终的宽度对图片缩放
+
+				var w = (windowW-imgWidth)/2;		//计算图片与窗口左边距
+				var h = (windowH-imgHeight)/2;		//计算图片与窗口上边距
+				$(innerdiv).css({"top":h, "left":w});//设置innerdiv的top和left属性
+				$(showFile).fadeIn("fast");			//淡入显示outerdiv及img
+			});
+
+			$(showFile).click(function(){			//再次点击淡出消失弹出层
+				$(this).fadeOut("fast");
+			});
+		}
+	</script>
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="./static/js/jumpToFour.js"></script>

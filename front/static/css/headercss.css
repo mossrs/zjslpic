@@ -1,0 +1,49 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.header-left{
+    height: 68px;
+    align-items: center;
+    margin-left: 40px;
+    display: flex;
+    float: left;
+}
+.header-right{
+    height: 68px;
+    align-items: center;
+    margin-right: 40px;
+    display: flex;
+    float: right;
+}
+.header-logo{
+    float: left;
+} 
+.header-myself{
+    float: right;
+}
+.header-text{
+    float: right;
+}
+div a{
+    font-size: 17px;
+    line-height: 24px;
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+    margin-right: 18px;
+    margin-left: 18px;
+    transition-property: color;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    text-decoration: none;
+}
+div a:hover{
+    color: #15dced;
+}
+.header{
+    position:fixed;
+    background-color: rgb(254, 254, 254,0);
+    width: 100%;
+    z-index: 999;
+}

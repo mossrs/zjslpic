@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/headercss.css">
+    <link rel="stylesheet" href="../css/log_and_register.css">
+    <script src="../js/axios-min.js"></script>
+    <link rel="stylesheet" href="../css/photos.css">
+    <title>浙江 · 诗路文化带</title>
+    <style>
+        div a{
+            color: black;
+        }
+        .tpt-login {
+            width: 360px;
+            height: 310px;
+        }
+        .header-out{
+            position:fixed;
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .header-in{
+            position:fixed;
+            background-color: rgb(254, 254, 254);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .overlay{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+            display: none;
+        }
+        .overlay-display{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10000px;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+        }
+        .login_end_window{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 200px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+            display: none;
+        }
+        .login_end_window_display{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 200px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+        }
+        .button-close{
+            width: 18px;
+            height: 18px;
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-weight: 700;
+            line-height: 1;
+            text-decoration: none;
+            color: rgba(0,0,0,.43);
+            cursor: pointer;
+            border: 0;
+            background-color: white;
+        }
+        #username{
+            font-size: 25px;
+            background-image: linear-gradient(135deg,#7ba5fb,#14ffe0);
+            border-radius: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-bottom: 2px;
+            color: white;
+            display: inline-block;
+            line-height: 30px;
+            margin-bottom: 12px;
+        }
+        .choise_lab_number{
+            width: 200px;
+            height: 55px;
+            border-bottom: #f0f8ff solid 1px;
+            text-align: center;
+            line-height: 55px;
+            color: #f0f8ff;
+            font-size: 14px;
+        }
+        table thead tr td{
+            text-align: center;
+            font-family: verdana,arial,sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-width: 0px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+        table tbody tr td{
+            text-align: center;
+            font-family: verdana,arial,sans-serif;
+            font-size: 13px;
+            border-width: 0px;
+            padding: 4px;
+            border-style: solid;
+            background-color: #ffffff;
+        }
+        table{
+            border: #56706c solid 1px;
+        }
+        tbody tr td img{
+            height: 50px;
+        }
+        .userChangeRewrite{
+            height: 25px;
+            margin-right: -10px;
+            margin-top: 8px;
+        }
+        .userChangeDelete{
+            height: 22px;
+            margin-right: -10px;
+            margin-top: 8px;
+        }
+        .picChangeRewrite{
+            height: 25px;
+            margin-right: -10px;
+            margin-top: 8px;
+        }
+        .picChangeDelete{
+            height: 25px;
+            margin-right: -10px;
+            margin-top: 8px;
+        }
+        #picBlankCatch tr>td:nth-child(5)>img{
+            object-fit: cover;
+            height: 100px;
+            width: 200px;
+        }
+        #ChangePicDescription{
+            transition: 0.5s;
+            border-radius: 5px;
+            border-color: #d9d9d9;
+        }
+        #ChangePicDescription:hover{
+            border-color: #15dced;
+        }
+        .userlinkCSS{
+            opacity: 0;
+        }
+        input[type='radio'] + label:before{
+            content: "";
+            display: inline-block;
+            border-radius: 100%;
+            width: 7px;
+            height: 7px;
+            border: 1.8px solid #d9d9d9;
+            margin: 3px;
+            margin-bottom: -0.5px;
+        }
+        input[type='radio']:checked + label:before{
+            border: 2px solid #15dced;
+        }
+        .div-useto-leave{
+            display: inline-block;
+            width: 70px;
+        }
+        label{
+            font-size: 13px;
+            color: #8a8a8a;
+            transition: all .3s;
+        }
+        label:hover{
+            color: #15dced;
+        }
+        input[type="radio"] {
+            display: none;
+        }
+    </style>
+</head>
+<body style="background-image: url(../imgs/background01.png); background-position: left top; width: 100%; background-size: 100% 100%; background-attachment: fixed;" id="body_hidden">
+    <div class="header" id="header">
+        <div class="header-left">
+            <a class="header-logo" style="user-select: none;">浙江诗路文化带·管理员界面</a>
+        </div>
+        <div class="header-right">
+            <a class="header-myself" href="javascript:;" onclick="jump_out()" style="color: red;">登出</a>
+            <div style="display: inline-block; margin-left: 10px;">
+                <img src="../imgs/user_header.jpg" style="border-radius: 100%; width:50px; height:50px;">
+            </div>
+            <script>
+                function jump_out(){
+                    location.search = ''
+                    window.location.href="log.html"
+                }
+            </script>
+        </div>
+    </div>
+    <div class="tpt-login" style="height:100%; width: 100%; min-width: 1300px; padding: 0;">
+        <div style="height: 68px; width: 100%; background-color: #14ffe0;"></div>
+        <div id="choise_lab" style="background-color: #000000cc; min-height: 300px; width: 200px; display: inline-block; position: absolute;z-index: 1;">
+            <div class="choise_lab_number">
+                <a href="javascript:;" style="color: #f0f8ff; display: inline-block; user-select: none;" onclick="show_main()">关于</a>
+            </div>
+            <div class="choise_lab_number">
+                <a href="javascript:;" style="color: #f0f8ff; display: inline-block; user-select: none;" onclick="show_user()">用户管理</a>
+            </div>
+            <div class="choise_lab_number">
+                <a href="javascript:;" style="color: #f0f8ff; display: inline-block; user-select: none;" onclick="show_pic()">图片管理</a>
+            </div>
+        </div>
+        <div id="user_pic_back" style="background-color: #00ff2f;">
+            <div style="display: inline-block; position: fixed; top: 50%; left: 50%; width: 250px; margin: -60px 0 0 -125px; height: 120px; background-color: #fafafa; z-index: 999; border-radius: 5px; border: #45c3de solid 2px; box-shadow: 2px 4px 6px 1px #838383; display: none;" id="DeleteOrNot">
+                <h4 style="margin: 18px 0 25px; font-weight: 600; text-align: center; user-select: none;">= 确定删除该用户 =</h4>
+                <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; margin-left: 45px;">
+                    <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="DeleteOrNot_delete()">确 定</h4>
+                </div>
+                <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; margin-left: 45px;">
+                    <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="DeleteOrNot_cancel()">取 消</h4>
+                </div>
+                <script>
+                    var DeleteOrNot = document.getElementById('DeleteOrNot')
+                    function DeleteOrNot_cancel(){
+                        DeleteOrNot.style.display = 'none'
+                    }
+                </script>
+            </div>
+            <div id="user_pic_back" style="background-color: #00ff2f;">
+            <div style="display: inline-block; position: fixed; top: 50%; left: 50%; width: 250px; margin: -60px 0 0 -125px; height: 120px; background-color: #fafafa; z-index: 999; border-radius: 5px; border: #45c3de solid 2px; box-shadow: 2px 4px 6px 1px #838383; display: none;" id="DeleteOrNot">
+                <h4 style="margin: 18px 0 25px; font-weight: 600; text-align: center; user-select: none;">= 确定删除该用户 =</h4>
+                <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; margin-left: 45px;">
+                    <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="DeleteOrNot_delete()">确 定</h4>
+                </div>
+                <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; margin-left: 45px;">
+                    <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="DeleteOrNot_cancel()">取 消</h4>
+                </div>
+                <script>
+                    var DeleteOrNot = document.getElementById('DeleteOrNot')
+                    function DeleteOrNot_cancel(){
+                        DeleteOrNot.style.display = 'none'
+                    }
+                </script>
+            </div>
+            <div style="display: inline-block; position: fixed; top: 50%; left: 50%; width: 260px; margin: -125px 0 0 -130px; height: 250px; background-color: #fafafa; z-index: 999; border-radius: 5px; border: #45c3de solid 2px; box-shadow: 2px 4px 6px 1px #838383; display: none;" id="ChangeOrNot">
+                <h4 style="margin: 18px 0 25px; font-weight: 600; text-align: center; user-select: none;">= 用户信息编辑 =</h4>
+                <div id="userChangeUsernameTotel" style="font-size: 12px; position: absolute; top: 50px; left: 25px; color: #646464;">账号 / Username</div>
+                <input type="text" name="name" placeholder="请修改账号" style="margin-bottom: 5px; width: 180px; height: 18px;position: absolute; top: 70px; left: 25px; font-size: 13px;" id="userChangeUsername">
+                <div id="userChangePasswordTotel" style="font-size: 12px; position: absolute; top: 120px; left: 25px; color: #646464;">密码 / Password</div>
+                <input type="text" name="text" placeholder="请修改密码" style="margin-bottom: 6px; width: 180px; height: 18px; position: absolute; top: 140px; left: 25px; font-size: 13px;" id="userChangePassword">
+                <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; position: absolute; bottom: 20px; left: 50px;">
+                    <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="ChangeOrNot_Change()">确 定</h4>
+                </div>
+                <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; position: absolute; bottom: 20px; right: 50px;">
+                    <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="ChangeOrNot_cancel()">取 消</h4>
+                </div>
+                <script>
+                    var ChangeOrNot = document.getElementById('ChangeOrNot')
+                    function ChangeOrNot_cancel(){
+                        ChangeOrNot.style.display = 'none'
+                    }
+                </script>
+            </div>
+            <div id="main_page" style="background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); min-width: 1536px; min-height: 300px; display: inline-block; transition: 1s;position: absolute; display: none;">
+                <div id="main_text" style="background-color: white; min-width: 1325px; min-height: 643px;position: absolute; left: 205px; top: 5px; border-radius: 10px;">
+                    <h1 style="font-size: 120px; color: linear-gradient(135deg,#7ba5fb,#14ffe0); margin: 120px 120px 20px; user-select: none;">欢迎！</h1>
+                    <p style="margin-left: 120px; font-size: 25px; user-select: none;">这里是浙江诗路带后台管理系统。</p>
+                    <p style="margin-left: 120px; font-size: 25px; user-select: none;">您可以通过用户管理查看用户信息或更改其权限。</p>
+                    <p style="margin-left: 120px; font-size: 25px; user-select: none;">您可以通过图片管理查看图片信息或进行编辑。</p>
+                </div>
+                <!-- <div style="background-color: #666666; min-width: 1336px; min-height: 300px; display: inline-block; position: absolute; left: 200px;"></div> -->
+            </div>
+            <div id="users_change" style="background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); min-width: 600px; min-height: 300px; display: inline-block;transition: 1s;position: absolute; display: none;">
+                <div id="user_text" style="background-color: white; min-width: 1325px; min-height: 643px;position: absolute; left: 205px; top: 5px; overflow:scroll; border-radius: 10px;">
+                    <h1 style="margin: 20px 0 0 30px; user-select: none;">用户管理</h1>
+                    <div style="width: 70px; height: 30px; display: inline-block; position: absolute; top: 28px; left: 200px;">
+                        <input type="text" style="height: 30px; width: 60px; margin: 0; padding: 0; border-radius: 10px 0 0 10px; text-align: center; caret-color:#d9d9d9; border: #cbcbcb solid 1px;" id="findUserPageNum">
+                    </div>
+                    <div style="width: 70px; height: 32px; display: inline-block; position: absolute; top: 28px; left: 260px; border-radius: 0 10px 10px 0; cursor:pointer; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0)">
+                        <p style="user-select: none; font-size: 13px; line-height: 32px; text-align: center; color: #ffffff;" id="findUserPageBtn">页数查找</p>
+                    </div>
+                    <p style="display: inline-block; position: absolute; top: 34px; left: 350px; font-size: 12px;" id="pageNum">当前 0 / 0 页</p>
+                    <a href="javascript:;" style="display: inline-block;" id="userBtnTouch">
+                        <div style="background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); width: 80px; height: 35px; display: inline-block; position: absolute; right: 60px; top: 30px; border-radius: 8px; color: #f0f8ff;">
+                            <img src="../imgs/plus.png" style="height: 22px; margin: 7px;display: inline-block; transition: 0.3s;" id="userBtn"><p style="display: inline-block; margin-top: 6px; position: absolute; color: #f0f8ff; font-size: 16px;">新增</p>
+                        </div>
+                    </a>
+                    <div style="border: #45c3de solid 2px; border-radius: 8px 0 8px 8px; background-color: rgb(250, 250, 250);display: inline-block; position: absolute; right: 60px; top: 70px; width: 280px; height: 300px; display: none;" id="userAddWindow">
+                        <h2 style="position: absolute; top: 15px; display: inline-block; left: 15px; font-size: 18px; font-weight: 600;">= 创建用户</h2>
+                        <div id="top_words01" style="font-size: 12px; position: absolute; top: 60px; left: 25px;">账号 / Username</div>
+                        <input type="text" name="name" placeholder="请设置账号" style="margin-bottom: 5px; width: 200px; height: 18px;position: absolute; top: 85px; left: 25px;" id="userCreateName">
+                        <div id="top_words02" style="font-size: 12px; position: absolute; top: 130px; left: 25px;">密码 / Password</div>
+                        <input type="text" name="text" placeholder="请设置密码" style="margin-bottom: 6px; width: 200px; height: 18px; position: absolute; top: 155px; left: 25px;" id="userCreatePassword">
+                        <button style="width: 80px; height: 40px; position: absolute; bottom: 20px; left: 100px; font-size: 18px; line-height: 40px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 8px;" id="userCreateBtn">创 建</button>
+                    </div>
+                    <div style="margin: 0px 30px 20px;">
+                        <table border="2" width="98%" height="40px" align="center">
+                            <thead>
+                                <tr>
+                                    <td style="width: 80px;">编号</td>
+                                    <td>用户名</td>
+                                    <td>权限</td>
+                                    <td>状态</td>
+                                    <td>操作</td>
+                                </tr>
+                            </thead>
+                            <tbody id="userBlankCatch"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="pic_change" style="background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); min-width: 600px; min-height: 300px; display: inline-block;transition: 1s;position: absolute;">
+                <div id="pic_text" style="background-color: white; min-width: 1325px; min-height: 643px;position: absolute; left: 205px; top: 5px; overflow:scroll; border-radius: 10px;">
+                    <h1 style="margin: 20px 0 0 30px;">图片管理</h1>
+                    <div style="width: 70px; height: 30px; display: inline-block; position: absolute; top: 28px; left: 200px;">
+                        <input type="text" style="height: 30px; width: 60px; margin: 0; padding: 0; border-radius: 10px 0 0 10px; text-align: center; caret-color:#d9d9d9; border: #cbcbcb solid 1px;" id="findPicPageNum">
+                    </div>
+                    <div style="width: 70px; height: 32px; display: inline-block; position: absolute; top: 28px; left: 260px; border-radius: 0 10px 10px 0; cursor:pointer; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0)">
+                        <p style="user-select: none; font-size: 13px; line-height: 32px; text-align: center; color: #ffffff;" id="findPicPageBtn">页数查找</p>
+                    </div>
+                    <p style="display: inline-block; position: absolute; top: 34px; left: 350px; font-size: 12px;" id="pageNumPic">当前 0 / 0 页</p>
+                    <div style="display: inline-block; position: fixed; top: 50%; left: 50%; width: 250px; margin: -60px 0 0 -125px; height: 120px; background-color: #fafafa; z-index: 999; border-radius: 5px; border: #45c3de solid 2px; box-shadow: 2px 4px 6px 1px #838383; display: none;" id="picDeleteOrNot">
+                        <h4 style="margin: 18px 0 25px; font-weight: 600; text-align: center; user-select: none;">= 确定删除该图片 =</h4>
+                        <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; margin-left: 45px;">
+                            <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="picDeleteOrNot_delete()">确 定</h4>
+                        </div>
+                        <div style="height: 30px; width: 50px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; margin-left: 45px;">
+                            <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 10px; user-select: none; cursor:pointer;" onclick="picDeleteOrNot_cancel()">取 消</h4>
+                        </div>
+                        <script>
+                            var picDeleteOrNot = document.getElementById('picDeleteOrNot')
+                            function picDeleteOrNot_cancel(){
+                                picDeleteOrNot.style.display = 'none'
+                            }
+                        </script>
+                    </div>
+                    <a href="javascript:;" style="display: inline-block;" id="picBtnTouch">
+                        <div style="background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); width: 80px; height: 35px; display: inline-block; position: absolute; right: 60px; top: 30px; border-radius: 8px; color: #f0f8ff;">
+                            <img src="../imgs/plus.png" style="height: 22px; margin: 7px;display: inline-block; transition: 0.3s;" id="picBtn"><p style="display: inline-block; margin-top: 6px; position: absolute; color: #f0f8ff; font-size: 16px;">新增</p>
+                        </div>
+                    </a>
+                    <div style="display: inline-block; position: fixed; top: 50%; left: 50%; width: 780px; margin: -225px 0 0 -390px; height: 450px; background-color: #fafafa; z-index: 999; border-radius: 5px; border: #45c3de solid 2px; box-shadow: 2px 4px 6px 1px #838383; display: none;" id="PicAddWindow">
+                        <h4 style="margin: 18px 0 25px; font-weight: 600; text-align: center; user-select: none; font-size: 18px;">= 新增图片 =</h4>
+                        <div style="font-size: 12px; position: absolute; top: 60px; left: 55px; color: #646464;">主题 / Location</div>
+                        <input type="text" style="margin-bottom: 5px; width: 180px; height: 18px;position: absolute; top: 80px; left: 55px; font-size: 13px; color: #000000;" id="AddPicLocation">
+                        <div style="font-size: 12px; position: absolute; top: 60px; left: 305px; color: #646464;">标题 / Name</div>
+                        <input type="text" name="text" style="margin-bottom: 6px; width: 180px; height: 18px; position: absolute; top: 80px; left: 305px; font-size: 13px; color: #000000;" id="AddPicName">
+                        <img src="../imgs/picloadready.png" style="height: 25px; position: absolute; top: 84px; right: 140px; display: none;" id="picloadready">
+                        <button style="width: 70px; height: 32px; border: none; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; position: absolute; right: 60px; top: 80px; padding: 0; display: inline-block; margin: 0; cursor: pointer;"><h1 style="font-size: 16px; margin-top: -8px; cursor: pointer;">上 传</h1></button>
+                        <input type="file" id="picUpload" style="text-decoration: none; width: 70px; height: 32px; border: none; border-radius: 5px; position: absolute; right: 60px; top: 80px; padding: 0; display: inline-block; opacity: 0; cursor: pointer;">
+
+                        <div style="font-size: 12px; position: absolute; top: 120px; left: 55px; color: #646464;">类别 / Category</div>
+                        <div style="display: flex; justify-content: space-evenly; position: absolute; top: 140px; width: 100%;">
+                            <input type="radio" name="kind" value="1" id="zdt"><label for="zdt" id="zdt_label">浙东唐诗路</label>
+                            <!-- <div class="div-useto-leave"></div> -->
+                            <input type="radio" name="kind" value="2" id="ojss"><label for="ojss" id="ojss_label">瓯江山水诗路</label>
+                            <!-- <div class="div-useto-leave"></div> -->
+                            <input type="radio" name="kind" value="3" id="qtj"><label for="qtj" id="qtj_label">钱塘江诗路</label>
+                            <!-- <div class="div-useto-leave"></div> -->
+                            <input type="radio" name="kind" value="4" id="dyh"><label for="dyh" id="dyh_label">大运河诗路</label>
+                        </div>
+
+                        <div style="font-size: 12px; position: absolute; top: 170px; left: 55px; color: #646464;">简述 / Description</div>
+                        <textarea cols="30" rows="10" style="width: 640px; height: 160px; top: 190px; position: absolute; left: 55px; resize: none; padding: 15px; font-size: 14px; font-family: '黑体'; outline-color: #15dced; border: #d9d9d9 1px solid; border-radius: 5px;" id="AddPicDescription"></textarea>
+                        <div style="height: 30px; width: 60px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display:inline-block; border-radius: 5px; position: absolute; bottom: 20px; left: 300px;">
+                            <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 15px; user-select: none; cursor:pointer;" onclick="PicAddOrNot_Add()">确 定</h4>
+                        </div>
+                        <div style="height: 30px; width: 60px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; position: absolute; bottom: 20px; right: 300px;">
+                            <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 15px; user-select: none; cursor:pointer;" onclick="PicAddOrNot_cancel()">取 消</h4>
+                        </div>
+                    </div>
+                    <script>
+                        var picBtnTimes = 1
+                        var category = ''
+                        document.getElementById('picBtnTouch').onclick = function(){
+                            document.getElementById('picBtn').style.transform = 'rotate('+picBtnTimes%2*90+'deg)'
+                            if(picBtnTimes%2==1){
+                                document.getElementById('PicAddWindow').style.display = ''
+                            }
+                            picBtnTimes++
+                        }
+                        zdt.onclick = function(){
+                            zdt_label.style.color = "#15dced"
+                            ojss_label.style.color = "#4d4d4d"
+                            qtj_label.style.color = "#4d4d4d"
+                            dyh_label.style.color = "#4d4d4d"
+                            category = '浙东唐诗路'
+                        }
+                        ojss.onclick = function(){
+                            zdt_label.style.color = "#4d4d4d"
+                            ojss_label.style.color = "#15dced"
+                            qtj_label.style.color = "#4d4d4d"
+                            dyh_label.style.color = "#4d4d4d"
+                            category = '瓯江山水诗路'
+                        }
+                        qtj.onclick = function(){
+                            zdt_label.style.color = "#4d4d4d"
+                            ojss_label.style.color = "#4d4d4d"
+                            qtj_label.style.color = "#15dced"
+                            dyh_label.style.color = "#4d4d4d"
+                            category = '钱塘江诗路'  
+                        }
+                        dyh.onclick = function(){
+                            zdt_label.style.color = "#4d4d4d"
+                            ojss_label.style.color = "#4d4d4d"
+                            qtj_label.style.color = "#4d4d4d"
+                            dyh_label.style.color = "#15dced"
+                            category = '大运河诗路'
+                        }
+                        setInterval(function(){
+                            if(document.getElementById('picUpload').files[0]!=undefined){
+                                document.getElementById('picloadready').style.display = ''
+                            }
+                            else{
+                                document.getElementById('picloadready').style.display = 'none'
+                            }
+                        },500)
+                        
+                        function PicAddOrNot_cancel(){
+                            document.getElementById('picUpload').value = ''
+                            document.getElementById('picBtn').style.transform = 'rotate('+picBtnTimes%2*90+'deg)'
+                            picBtnTimes++
+                            document.getElementById('PicAddWindow').style.display = 'none'
+                        }
+                        function PicAddOrNot_Add(){
+                            console.log(category)
+                            // console.log(document.getElementById('picUpload').files[0])
+                            console.log(document.getElementById('AddPicName').value)
+                            console.log(document.getElementById('AddPicLocation').value)
+                            console.log(document.getElementById('AddPicDescription').value)
+                            console.log(document.getElementById('picUpload').files[0])
+                            axios({
+                                method: 'POST',
+                                url: ' http://1.117.80.52:8033/pic/photo/uploadPic',
+                                data: {
+                                    name: document.getElementById('AddPicName').value,
+                                    category: category,
+                                    location: document.getElementById('AddPicLocation').value,
+                                    description: document.getElementById('AddPicDescription').value,
+                                    uploadName: 'admin',
+                                    file: document.getElementById('picUpload').files[0]
+                                },
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            })
+                            .then(res =>{
+                                console.log('////////////上传图片返回')
+                                console.log(res.data)
+                                if(res.data.code==1)
+                                {
+                                    show_picPageMessage(PagePic)
+                                    document.getElementById('AddPicName').value = ''
+                                    document.getElementById('AddPicLocation').value = ''
+                                    document.getElementById('AddPicDescription').value = ''
+                                    document.getElementById('picUpload').value = ''
+                                    document.getElementById('picBtn').style.transform = 'rotate('+picBtnTimes%2*90+'deg)'
+                                    picBtnTimes++
+                                    document.getElementById('PicAddWindow').style.display = 'none'
+                                    category = ''
+                                    zdt_label.style.color = "#8a8a8a"
+                                    ojss_label.style.color = "#8a8a8a"
+                                    qtj_label.style.color = "#8a8a8a"
+                                    dyh_label.style.color = "#8a8a8a"
+                                    zdt.onclick = 'null'
+                                    ojss.onclick = 'null'
+                                    qtj.onclick = 'null'
+                                    dyh.onclick = 'null'
+                                    zdt.style.border = '1.8px solid #d9d9d9'
+                                    ojss.style.border = '1.8px solid #d9d9d9'
+                                    qtj.style.border = '1.8px solid #d9d9d9'
+                                    dyh.style.border = '1.8px solid #d9d9d9'
+                                }
+                            })
+                        }
+                    </script>
+                    <div style="display: inline-block; position: fixed; top: 50%; left: 50%; width: 780px; margin: -225px 0 0 -390px; height: 450px; background-color: #fafafa; z-index: 999; border-radius: 5px; border: #45c3de solid 2px; box-shadow: 2px 4px 6px 1px #838383; display: none;" id="PicremakeWindow">
+                        <h4 style="margin: 18px 0 25px; font-weight: 600; text-align: center; user-select: none; font-size: 18px;">= 图片信息编辑 =</h4>
+                        <div style="font-size: 12px; position: absolute; top: 60px; left: 55px; color: #646464;">主题 / Location</div>
+                        <input type="text" style="margin-bottom: 5px; width: 180px; height: 18px;position: absolute; top: 80px; left: 55px; font-size: 13px; color: #000000;" id="ChangePicLocationS" class="zzzzzzzzzzz">
+                        <div style="font-size: 12px; position: absolute; top: 60px; left: 305px; color: #646464;">标题 / Name</div>
+                        <input type="text" name="text" style="margin-bottom: 6px; width: 180px; height: 18px; position: absolute; top: 80px; left: 305px; font-size: 13px; color: #000000;" id="ChangePicName">
+                        <div style="font-size: 12px; position: absolute; top: 120px; left: 55px; color: #646464;">简述 / Description</div>
+                        <textarea cols="30" rows="10" style="width: 640px; height: 180px; top: 140px; position: absolute; left: 55px; resize: none; padding: 15px; font-size: 14px; font-family: '黑体'; outline-color: #15dced;" id="ChangePicDescription"></textarea>
+                        
+                        <img src="../imgs/picloadready.png" style="height: 25px; position: absolute; top: 84px; right: 140px; display: none;" id="picchangeready">
+                        <button style="width: 70px; height: 32px; border: none; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; position: absolute; right: 60px; top: 80px; padding: 0; display: inline-block; margin: 0; cursor: pointer;"><h1 style="font-size: 16px; margin-top: -8px; cursor: pointer;">上 传</h1></button>
+                        <input type="file" id="picChangeUpload" style="text-decoration: none; width: 70px; height: 32px; border: none; border-radius: 5px; position: absolute; right: 60px; top: 80px; padding: 0; display: inline-block; opacity: 0; cursor: pointer;">
+
+                        <script>
+                            setInterval(function(){
+                            if(document.getElementById('picChangeUpload').files[0]!=undefined){
+                                document.getElementById('picchangeready').style.display = ''
+                            }
+                            else{
+                                document.getElementById('picchangeready').style.display = 'none'
+                            }
+                        },500)
+                        </script>
+
+                        <div style="height: 30px; width: 60px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; position: absolute; bottom: 20px; left: 300px;">
+                            <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 15px; user-select: none; cursor:pointer;" onclick="PicChangeOrNot_Change()">确 定</h4>
+                        </div>
+                        <div style="height: 30px; width: 60px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); display: inline-block; border-radius: 5px; position: absolute; bottom: 20px; right: 300px;">
+                            <h4 style="color: #fafafa; display: inline-block; font-size: 13px; margin: 5px 15px; user-select: none; cursor:pointer;" onclick="PicChangeOrNot_cancel()">取 消</h4>
+                        </div>
+                        <script>
+                            var PicremakeWindow = document.getElementById('PicremakeWindow')
+                            function PicChangeOrNot_cancel(){
+                                PicremakeWindow.style.display = 'none'
+                            }
+                        </script>
+                    </div>
+                    <div style="margin: 0px 30px;">
+                        <table border="2" width="98%" height="100px" align="center">
+                            <thead>
+                                <tr>
+                                    <td style="width: 80px;">序号</td>
+                                    <td style="width: 150px;">主题</td>
+                                    <td style="width: 150px;">标题</td>
+                                    <td style="width: 350px;">简述</td>
+                                    <td>图片展示</td>
+                                    <td>操作</td>
+                                </tr>
+                            </thead>
+                            <tbody id="picBlankCatch"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var window_height = window.innerHeight;
+        var window_width = window.innerWidth;
+        var choise_lab = document.getElementById('choise_lab');
+
+        var users_change = document.getElementById('users_change')
+        var pic_change = document.getElementById('pic_change')
+        var main_page = document.getElementById('main_page')
+
+        var main_text = document.getElementById('main_text')
+        var user_text = document.getElementById('user_text')
+        var pic_text = document.getElementById('pic_text')
+
+        var userChangeRewrite = document.getElementsByClassName('userChangeRewrite')
+        var picChangeRewrite = document.getElementsByClassName('picChangeRewrite')
+        var picChangeDelete = document.getElementsByClassName('picChangeDelete')
+        var userChangeDelete = document.getElementsByClassName('userChangeDelete')
+        
+        main_page.style.height = window_height - 68 + 'px';
+        main_page.style.width = window_width + 'px';
+        
+        pic_change.style.height = window_height - 68 + 'px';
+        pic_change.style.width = window_width + 'px';
+
+        users_change.style.height = window_height - 68 + 'px';
+        users_change.style.width = window_width + 'px';
+
+        main_text.style.height = (window_height - 68) * 0.97+ 'px';
+        main_text.style.width = (window_width-200) * 0.97 + 'px';
+
+        user_text.style.height = (window_height - 68) * 0.97+ 'px';
+        user_text.style.width = (window_width-200) * 0.97 + 'px';
+
+        pic_text.style.height = (window_height - 68) * 0.97+ 'px';
+        pic_text.style.width = (window_width-200) * 0.97 + 'px';
+        
+        choise_lab.style.height = window_height - 68 + 'px';
+
+        window.onscroll=function(){
+		    //获取滚动条位置
+            var jhlheight=document.documentElement.scrollTop||document.body.scrollTop
+            //判断滚动条位置
+            if(jhlheight>=100){
+                header.className = "header-out"
+            }else{
+                header.className = "header-in"
+            }
+        }
+        function show_user(){
+            pic_change.style.display = 'none'
+            main_page.style.display = 'none'
+            users_change.style.display = ''
+        }
+        function show_pic(){
+            pic_change.style.display = ''
+            main_page.style.display = 'none'
+            users_change.style.display = 'none'
+        }
+        function show_main(){
+            pic_change.style.display = 'none'
+            main_page.style.display = ''
+            users_change.style.display = 'none'
+        }
+
+        var userAddWindow = document.getElementById('userAddWindow')
+        var userBtnTouch = document.getElementById('userBtnTouch')
+        var userBtn = document.getElementById('userBtn')
+        var userBtnTimes = 0
+        userBtnTouch.onclick = function(){
+            if(userBtnTimes==0){
+                userBtn.style.transform = 'rotate(45deg)'
+                userBtnTimes = 1
+                userAddWindow.style.display = ''
+            }
+            else{
+                userBtn.style.transform = 'rotate(0deg)'
+                userBtnTimes = 0
+                userAddWindow.style.display = 'none'
+            }
+        }
+        var page = 1
+        var deleteWho = -1//用户点击删除之后，该行的序号由此接收，之后在确认界面中使用
+        show_userPageMessage(1)
+        function show_userPageMessage(messagePage){
+            document.getElementById('userBlankCatch').innerHTML = ''
+            axios({
+                method: 'GET',
+                url: ' http://1.117.80.52:8033/pic/user/getPageUsers/'+messagePage+'/10',
+                // data: {
+                //     username: document.getElementById("username").value,
+                //     password: document.getElementById("password").value
+                // }
+            })
+            .then(res =>{
+                console.log('/////////////获取用户返回');
+                console.log(res.data);
+                document.getElementById('pageNum').innerText = '当前 '+res.data.data.currentPage+' / '+res.data.data.totalPage+' 页'
+                page = res.data.data.currentPage
+                for(var lines = 0; lines < res.data.data.items.length; lines++){
+
+                        var userLine = document.createElement('tr')//整个用户行
+                        var userNum = document.createElement('td')//序号
+                        var userName = document.createElement('td')//
+                        var userIsAdmin = document.createElement('td')//是否管理员
+                        var userIsDeleted = document.createElement('td')//是否启用
+                        var userChangeAndDelete = document.createElement('td')//td盒子
+                        var aChange = document.createElement('a')//编辑a
+                        var aDelete = document.createElement('a')//删除a
+                        var imgChange = document.createElement('img')//编辑图片
+                        var imgDelete = document.createElement('img')//删除图片
+
+                        userChangeAndDelete.style.width = '140px'
+                        aChange.href = 'javascript:;'
+                        aDelete.href = 'javascript:;'
+                        imgChange.src = '../imgs/change.png'
+                        imgChange.className = 'userChangeRewrite'
+                        imgDelete.src = '../imgs/delete.png'
+                        imgDelete.className = 'userChangeDelete'
+
+
+                        userNum.innerText = res.data.data.items[lines]['id']
+                        userName.innerText = res.data.data.items[lines]['username']
+                        if(res.data.data.items[lines]['isAdmin']==false)userIsAdmin.innerText='用户'
+                        else userIsAdmin.innerText='管理员'
+                        if(res.data.data.items[lines]['deleted']==false)userIsDeleted.innerText='启用'
+                        else userIsDeleted.innerText='禁用'
+
+                        aChange.appendChild(imgChange);
+                        aDelete.appendChild(imgDelete);
+                        userChangeAndDelete.appendChild(aChange);
+                        userChangeAndDelete.appendChild(aDelete);
+                        userLine.appendChild(userNum);
+                        userLine.appendChild(userName);
+                        userLine.appendChild(userIsAdmin);
+                        userLine.appendChild(userIsDeleted);
+                        userLine.appendChild(userChangeAndDelete);
+                        document.getElementById('userBlankCatch').appendChild(userLine);
+                }
+                for(let i = 0; i<res.data.data.items.length; i++){
+                    userChangeRewrite[i].onclick = function(){
+                        ChangeOrNot.style.display = ''
+                        deleteWho=userChangeDelete[i].parentElement.parentElement.parentElement.getElementsByTagName('td')[0].innerText
+                    }
+                    userChangeDelete[i].onclick = function(){
+                        DeleteOrNot.style.display = ''
+                        deleteWho=userChangeDelete[i].parentElement.parentElement.parentElement.getElementsByTagName('td')[0].innerText 
+                    }
+                }
+            })
+        }
+        ///////////////////////////////////
+        //  图片信息显示
+        //////////////////////////////////
+        var PagePic = 1 
+        var PICdeleteWho = -1//用于储存图片的id 注意不是图片在该页的序号 图片在该页只有 0-9 的值
+        show_picPageMessage(1)
+        function show_picPageMessage(messagePagePic){
+            document.getElementById('picBlankCatch').innerHTML = ''
+            axios({
+                method: 'GET',
+                url: ' http://1.117.80.52:8033/pic/photo/getPagePics/'+messagePagePic+'/10',
+                // data: {
+                //     username: document.getElementById("username").value,
+                //     password: document.getElementById("password").value
+                // }
+            })
+            .then(res =>{
+                console.log('/////////////获取图片返回');
+                console.log(res.data);
+                document.getElementById('pageNumPic').innerText = '当前 '+res.data.data.currentPage+' / '+res.data.data.totalPage+' 页'
+                page = res.data.data.currentPage
+                for(var lines = 0; lines < res.data.data.items.length; lines++){
+
+                        var picLine = document.createElement('tr')//整个图片行
+                        var picNum = document.createElement('td')//序号
+                        var picName = document.createElement('td')//主题
+                        var picLocation = document.createElement('td')//标题
+                        var picDescription = document.createElement('td')//简述
+                        var picBox = document.createElement('td')//图片盒子
+                        var picImg = document.createElement('img')//图片
+                        var picChangeAndDelete = document.createElement('td')//td盒子
+                        var picAChange = document.createElement('a')//编辑a
+                        var picADelete = document.createElement('a')//删除a
+                        var picImgChange = document.createElement('img')//编辑图片
+                        var picImgDelete = document.createElement('img')//删除图片
+
+                        picChangeAndDelete.style.width = '140px'
+                        picAChange.href = 'javascript:;'
+                        picADelete.href = 'javascript:;'
+                        picImgChange.src = '../imgs/change.png'
+                        picImgChange.className = 'picChangeRewrite'
+                        picImgDelete.src = '../imgs/delete.png'
+                        picImgDelete.className = 'picChangeDelete'
+                        picDescription.style.borderBottom = '#cbcbcb solid 1px'
+                        picLocation.style.borderBottom = '#cbcbcb solid 1px'
+                        picName.style.borderBottom = '#cbcbcb solid 1px'
+
+                        picNum.innerText = res.data.data.items[lines]['id']
+                        picName.innerText = res.data.data.items[lines]['name']
+                        picLocation.innerText = res.data.data.items[lines]['location']
+                        picDescription.innerText = res.data.data.items[lines]['description']
+                        picImg.src = 'https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com'+res.data.data.items[lines]['url']
+
+                        picAChange.appendChild(picImgChange);
+                        picADelete.appendChild(picImgDelete);
+                        picChangeAndDelete.appendChild(picAChange);
+                        picChangeAndDelete.appendChild(picADelete);
+                        picBox.appendChild(picImg);
+                        picLine.appendChild(picNum);
+                        picLine.appendChild(picName);
+                        picLine.appendChild(picLocation);
+                        picLine.appendChild(picDescription);
+                        picLine.appendChild(picBox);
+                        picLine.appendChild(picChangeAndDelete);
+                        document.getElementById('picBlankCatch').appendChild(picLine);
+                }
+                for(let i = 0; i<res.data.data.items.length; i++){
+                    picChangeRewrite[i].onclick = function(){
+                        // console.log('re'+i)
+                        PicremakeWindow.style.display = ''
+                        document.getElementById('ChangePicDescription').value = this.parentElement.parentElement.parentElement.getElementsByTagName('td')[3].innerText
+                        document.getElementById('ChangePicLocationS').value = this.parentElement.parentElement.parentElement.getElementsByTagName('td')[2].innerText
+                        document.getElementById('ChangePicName').value = this.parentElement.parentElement.parentElement.getElementsByTagName('td')[1].innerText
+                        PICdeleteWho=this.parentElement.parentElement.parentElement.getElementsByTagName('td')[0].innerText
+                    }
+                    picChangeDelete[i].onclick = function(){
+                        // console.log('de'+i)
+                        picDeleteOrNot.style.display = ''
+                        PICdeleteWho=this.parentElement.parentElement.parentElement.getElementsByTagName('td')[0].innerText
+                        PICurl = this.parentElement.parentElement.parentElement.getElementsByTagName('td')[4].getElementsByTagName('img')[0].src.replace('https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com/','')
+                    }
+                }
+            })
+        }
+        function DeleteOrNot_delete(){
+            axios({
+            method: 'DELETE',
+            url: ' http://1.117.80.52:8033/pic/user/delete/'+deleteWho
+            // data: {
+            //     username: document.getElementById("username").value,
+            //     password: document.getElementById("password").value
+            // }
+            })
+            .then(res =>{
+                console.log('/////////////删除返回\n');
+                console.log(res.data);
+                if(res.data.code==1)
+                {
+                    show_userPageMessage(page)
+                    document.getElementById('DeleteOrNot').style.display = 'none'
+                }
+            })
+        }
+        function ChangeOrNot_Change(){
+            axios({
+            method: 'PUT',
+            url: ' http://1.117.80.52:8033/pic/user/update',
+            data: {
+                id: deleteWho,
+                username: document.getElementById("userChangeUsername").value,
+                password: document.getElementById("userChangePassword").value
+            }
+            })
+            .then(res =>{
+                console.log('/////////////用户信息修改返回\n');
+                console.log(res.data);
+                if(res.data.code==1)
+                {
+                    show_userPageMessage(page)
+                    document.getElementById('ChangeOrNot').style.display = 'none'
+                    document.getElementById("userChangeUsername").value = ''
+                    document.getElementById("userChangePassword").value = ''
+                }
+            })
+        }
+        document.getElementById('findUserPageBtn').onclick = function(){
+            page = document.getElementById('findUserPageNum').value
+            show_userPageMessage(page)
+        }
+        document.getElementById('findPicPageBtn').onclick = function(){
+            PagePic = document.getElementById('findPicPageNum').value
+            show_picPageMessage(PagePic)
+        }
+
+        document.getElementById('userCreateBtn').onclick = function(){
+            axios({
+                method: 'POST',
+                url: ' http://1.117.80.52:8033/pic/user/login',
+                data: {
+                    username: document.getElementById("userCreateName").value,
+                    password: document.getElementById("userCreatePassword").value
+                }
+            })
+            .then(res =>{
+                console.log('//////////////////用户创建返回')
+                console.log(res.data);
+                if(res.data.code==1)
+                {
+                    show_userPageMessage(page)
+                    userBtn.style.transform = 'rotate(0deg)'
+                    userBtnTimes = 0
+                    userAddWindow.style.display = 'none'
+                    document.getElementById("userCreateName").value = ''
+                    document.getElementById("userCreatePassword").value = ''
+                }
+            })
+        }
+        function PicChangeOrNot_Change(){
+            // console.log(PICdeleteWho+'\n'+document.getElementById('ChangePicDescription').value+'\n'+document.getElementsByClassName('zzzzzzzzzzz')[0].value+'\n'+document.getElementById('ChangePicName').value)
+            if(document.getElementById('picChangeUpload').files[0]==undefined){
+                axios({
+                    method: 'PUT',
+                    url: 'http://1.117.80.52:8033/pic/photo/updatePic',
+                    data: {
+                        name: document.getElementById('ChangePicName').value,
+                        location: document.getElementsByClassName('zzzzzzzzzzz')[0].value,
+                        description: document.getElementById('ChangePicDescription').value,
+                        picId: parseInt(PICdeleteWho)
+                    },
+                    headers: {
+                        "Content-Type": "application/json;charset=UTF-8"
+                    }
+                })
+                .then(res =>{
+                    console.log('//////////////////图片信息修改返回')
+                    console.log(res.data);
+                    if(res.data.code==1)
+                    {
+                        show_picPageMessage(PagePic)
+                        PicremakeWindow.style.display = 'none'
+                        document.getElementById('ChangePicDescription').value = ''
+                        document.document.getElementsByClassName('zzzzzzzzzzz')[0].value = ''
+                        document.getElementById('ChangePicName').value = ''
+                    }
+                })
+            }else{
+                axios({
+                    method: 'PUT',
+                    url: 'http://1.117.80.52:8033/pic/photo/updatePic',
+                    data: {
+                        name: document.getElementById('ChangePicName').value,
+                        location: document.getElementsByClassName('zzzzzzzzzzz')[0].value,
+                        description: document.getElementById('ChangePicDescription').value,
+                        picId: parseInt(PICdeleteWho),
+                        file: document.getElementById('picChangeUpload').files[0]
+                    },
+                    headers: {
+                        'Content-Type': 'multipart/form-data;application/json;charset=UTF-8'
+                    }
+                })
+                .then(res =>{
+                    console.log('//////////////////图片信息修改返回')
+                    console.log(res.data);
+                    if(res.data.code==1)
+                    {
+                        show_picPageMessage(PagePic)
+                        PicremakeWindow.style.display = 'none'
+                        document.getElementById('ChangePicDescription').value = ''
+                        document.getElementsByClassName('zzzzzzzzzzz')[0].value = ''
+                        document.getElementById('ChangePicName').value = ''
+                        document.getElementById('picChangeUpload').value = ''
+                    }
+                })
+            }
+            
+        }
+        function picDeleteOrNot_delete(){
+            PICurl = decodeURI(PICurl)
+            console.log(PICdeleteWho)
+            console.log (PICurl)
+            axios({
+                method: 'DELETE',
+                url: 'http://1.117.80.52:8033/pic/photo/deletePic',
+                data: {
+                    picId: PICdeleteWho,
+                    url: PICurl
+                },
+                headers:{
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(res =>{
+                console.log('/////////////删除返回\n');
+                console.log(res.data);
+                if(res.data.code==1)
+                {
+                    document.getElementById('picDeleteOrNot').style.display = 'none'
+                    show_picPageMessage(page)
+                    PICurl = ''
+                    PICdeleteWho = ''
+                }
+            })
+        }
+    </script>
+</body>
+</html>

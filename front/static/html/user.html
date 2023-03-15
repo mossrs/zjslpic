@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/headercss.css">
+    <link rel="stylesheet" href="../css/log_and_register.css">
+    <link rel="stylesheet" href="../css/photos.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="../js/axios-min.js"></script>
+
+    <title>浙江 · 诗路文化带</title>
+    <style>
+        div a{
+            color: black;
+        }
+        .tpt-login {
+            width: 360px;
+            height: 310px;
+        }
+        .header-out{
+            position:fixed;
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .header-in{
+            position:fixed;
+            background-color: rgb(254, 254, 254);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .overlay{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+            display: none;
+        }
+        .overlay-display{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10000px;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+        }
+        .login_end_window{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 200px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+            display: none;
+        }
+        .login_end_window_display{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 200px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+        }
+        .button-close{
+            width: 18px;
+            height: 18px;
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-weight: 700;
+            line-height: 1;
+            text-decoration: none;
+            color: rgba(0,0,0,.43);
+            cursor: pointer;
+            border: 0;
+            background-color: white;
+        }
+        #username{
+            font-size: 25px;
+            background-image: linear-gradient(135deg,#7ba5fb,#14ffe0);;
+            border-radius: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-bottom: 2px;
+            color: white;
+            display: inline-block;
+            line-height: 30px;
+            margin-bottom: 12px;
+        }
+        .header-logo:hover{
+            color: black;
+            cursor: default;
+        }
+    </style>
+</head>
+<body style="background-image: url(../imgs/background01.png); background-position: left top; width: 100%; background-size: 100% 100%; background-attachment: fixed;" id="body_hidden">
+    <div class="header" id="header">
+        <div class="header-left">
+            <a class="header-logo" href="#">浙东唐诗路</a>
+            <a class="header-logo" href="#">瓯江山水诗路</a>
+            <a class="header-logo" href="#">钱塘江诗路</a>
+            <a class="header-logo" href="#">大运河诗路</a>
+        </div>
+        <div class="header-right">
+            <a class="header-text" href="javascript:;" onclick="jump_to_index()" id="header-logo05">首页</a>
+            <a class="header-myself" href="javascript:;" onclick="jump_out()" style="color: red;">登出</a>
+            <script>
+                function jump_to_index(){
+                    window.location.href = 'index_login_after.html?users='+location.search.slice(7);
+                }
+                function jump_out(){
+                    location.search = ''
+                    window.location.href="log.html"
+                }
+            </script>
+        </div>
+    </div>
+    <div style="height:110px;"></div>
+    <div class="tpt-login" style="height:100%; width: 90%; min-width: 1300px; padding: 30px 0px;">
+        <div style="display: inline-block; margin-left: 55px;">
+            <img src="../imgs/user_header.jpg" style="border-radius: 100%; width:75px; height:75px;">
+        </div>
+        <div style="display: inline-block; margin-left: 15px;">
+            <div class="usermassage">
+                <p id="username">not-found</p>
+            </div>
+            <div>
+                <p id="email">not-found</p>
+            </div>
+        </div>
+        <h2 style="border-bottom: #c2c2c2 1px solid; padding-bottom: 15px;"></h2>
+        <p style="padding: 14px;margin-left: 65px;font-size: 16px;font-weight: 600; color: rgb(81, 81, 81);">我的图片</p>
+        <h2 style="border-bottom: #c2c2c2 1px solid; padding-bottom: 0;"></h2>
+
+        <div style="overflow-y: scroll; height: 500px; margin: 10px 38px 100px 58px; min-width: 1200px;" id="photosbox">
+        </div>
+    </div>
+    <div class="footer" style="background-color: #4c4c4c; width: 100%; min-width: 1516px; border-bottom: #15dced solid 2px; box-shadow: 0 -6px 10px 0 rgb(23 44 45 / 60%); margin-top: -100px;">
+        <div style="text-align: center;">
+            <div style="height: 8px; width:400px; border-radius: 4px; background-color: white; display: inline-block; margin-top: 15px;">
+            </div>
+        </div>
+        <div style="display: inline-block; padding: 25px 300px; display:flex;">
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.9;">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">走进诗路</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">浙东唐诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">瓯江山水诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">钱塘江诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">大运河诗路</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:1">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">用户空间</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">登陆须知</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">用户协议</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">诗路同行</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">创作平台</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">文风行纪</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">诗路详情</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">关于我们</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">联系我们</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">传送门</a>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        var header = document.getElementById("header");
+        var overlay = document.getElementById("overlay");
+        var username = document.getElementById("username");
+        var email = document.getElementById("email");
+        var username_;
+        window.onscroll=function(){
+		    //获取滚动条位置
+            var jhlheight=document.documentElement.scrollTop||document.body.scrollTop
+            //判断滚动条位置
+            if(jhlheight>=100){
+                header.className = "header-out"
+            }else{
+                header.className = "header-in"
+            }
+        }
+        // axios({
+        //     method: 'GET',
+        //     url: '',
+        //     header:{
+        //         'token': location.search.slice(7)
+        //     }
+        // })
+        // .then(res =>{
+        //     if(res.data.code==20051){
+        //         username_ = res.data.data.username;
+        //         username.innerText = res.data.data.username;
+        //         email.innerText = res.data.data.email;
+        //     }else{
+        //     }
+            
+        // })
+        
+        axios({
+            method: 'GET',
+            url: 'http://1.117.80.52:8033/pic/user/getUsers',
+        })
+        .then(res =>{
+            console.log(res.data.data)
+            for(var i=0;i<res.data.data.length;i++){
+                if(res.data.data[i].id==location.search.slice(7)){
+                    username_ = res.data.data[i].username
+                    username.innerText = username_;
+                    email.innerText = 'ID：'+location.search.slice(7);
+
+                    // 第一个axios请求完成后再调用第二个axios请求
+                    axios({
+                        method: 'GET',
+                        url: 'http://1.117.80.52:8033/pic/photo/getUserPics',
+                        params: {
+                            username: username_
+                        }
+                    })
+                    .then(res =>{
+                        console.log('////////////上传图片返回')
+                        // console.log(res.data.data)
+                        if(res.data.code==1){
+                            for(var i=0; i<res.data.data.length; i++){
+                                var new_photo_box_div = document.createElement('div');
+                                var new_photo_link_a = document.createElement('a');
+                                var new_photo_img = document.createElement('img');
+                                var new_photo_imgdiv = document.createElement('div');
+                                var new_photo_photosname_p = document.createElement('p');
+                                var new_photo_loadername_p = document.createElement('p');
+                                var new_photo_photoskind_p = document.createElement('p');
+                                new_photo_box_div.className = 'first_div';
+                                new_photo_imgdiv.className = 'second_div';
+                                new_photo_link_a.className = 'photos-a';
+                                
+                                // new_photo_link_a.href = 'lookphotos.html?photo='+res.data.data[i]['url']+'='+res.data.data[i]['location']+'='+res.data.data[i]['id']+'='+res.data.data[i]['name']
+                                new_photo_link_a.href = 'javascript:;'
+
+                                new_photo_link_a.className = 'the_a';
+                                new_photo_img.src = 'https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com'+res.data.data[i]['url']
+                                new_photo_img.className = 'the_img';
+
+                                new_photo_photosname_p.innerText = res.data.data[i]['name']
+                                new_photo_loadername_p.innerText = res.data.data[i]['id']
+                                new_photo_photoskind_p.innerText = res.data.data[i]['location']
+
+                                new_photo_photosname_p.setAttribute('id','first_p');
+                                new_photo_loadername_p.className = 'second_p';
+                                new_photo_photoskind_p.className = 'third_p';
+
+                                new_photo_link_a.appendChild(new_photo_img);
+                                new_photo_imgdiv.appendChild(new_photo_link_a);
+                                new_photo_box_div.appendChild(new_photo_imgdiv);
+                                new_photo_box_div.appendChild(new_photo_photosname_p);
+                                new_photo_box_div.appendChild(new_photo_loadername_p);
+                                new_photo_box_div.appendChild(new_photo_photoskind_p);
+
+                                document.getElementById('photosbox').appendChild(new_photo_box_div);
+                            } 
+                        }
+                    })
+                    // break;
+                }
+            }
+        })
+
+        // function getUserAccount(){ 
+        //     return axios.get('http://1.117.80.52:8033/pic/getUserPics', {headers: {'token': location.search.slice(7)}});
+        // }
+        // function getUserPermissions(){  
+        //     return axios.get('http://zjcuz.com/pic/imgs/list', {headers: {'token': location.search.slice(7)}});
+        // }
+        // axios.all([getUserAccount(),getUserPermissions()])
+        // .then(axios.spread(function(acct, perms){ 
+        //     console.log(acct);
+        //     console.log(perms);
+        //     //当这两个请求都完成的时候会触发这个函数，两个参数分别代表返回的结果 
+        //     if(acct.data.code==20051){
+        //         username_ = acct.data.data.username;
+        //         username.innerText = acct.data.data.username;
+        //         email.innerText = acct.data.data.email;
+        //     }else{
+        //     }
+
+        //     if(perms.data.code==20041){
+        //         for(var i=0; i<perms.data.data.length; i++){
+        //             var new_photo_box_div = document.createElement('div');
+        //             var new_photo_link_a = document.createElement('a');
+        //             var new_photo_img = document.createElement('img');
+        //             var new_photo_imgdiv = document.createElement('div');
+        //             var new_photo_photosname_p = document.createElement('p');
+        //             var new_photo_loadername_p = document.createElement('p');
+        //             var new_photo_photoskind_p = document.createElement('p');
+        //             new_photo_box_div.className = 'first_div';
+        //             new_photo_imgdiv.className = 'second_div';
+        //             new_photo_link_a.className = 'photos-a';
+        //             new_photo_link_a.href = 'javascript:;';
+        //             new_photo_link_a.className = 'the_a';
+        //             new_photo_img.src = 'http://zjcuz.com/'+perms.data.data[i].url;
+        //             new_photo_img.className = 'the_img';
+
+        //             new_photo_photosname_p.innerText = perms.data.data[i].imgName;
+        //             new_photo_loadername_p.innerText = '';
+        //             new_photo_photoskind_p.innerText = perms.data.data[i].imgCategory;
+
+        //             new_photo_photosname_p.setAttribute('id','first_p');
+        //             new_photo_loadername_p.className = 'second_p';
+        //             new_photo_photoskind_p.className = 'third_p';
+
+        //             new_photo_link_a.appendChild(new_photo_img);
+        //             new_photo_imgdiv.appendChild(new_photo_link_a);
+        //             new_photo_box_div.appendChild(new_photo_imgdiv);
+        //             new_photo_box_div.appendChild(new_photo_photosname_p);
+        //             new_photo_box_div.appendChild(new_photo_loadername_p);
+        //             new_photo_box_div.appendChild(new_photo_photoskind_p);
+
+        //             document.getElementById('photosbox').appendChild(new_photo_box_div);
+        //         } 
+        //     }
+        // }))
+        // 获取用户所有图片
+        // axios({
+        //     url:'',
+        //     method: 'GET',
+        //     headers: {
+        //         'token': location.search.slice(7)
+        //     }
+        // }).then(res =>{
+        //     console.log(res.data.data)
+        //     if(res.data.code==20041){
+        //         for(var i=0; i<res.data.data.length; i++){
+        //             var new_photo_box_div = document.createElement('div');
+        //             var new_photo_link_a = document.createElement('a');
+        //             var new_photo_img = document.createElement('img');
+        //             var new_photo_imgdiv = document.createElement('div');
+        //             var new_photo_photosname_p = document.createElement('p');
+        //             var new_photo_loadername_p = document.createElement('p');
+        //             var new_photo_photoskind_p = document.createElement('p');
+        //             new_photo_box_div.className = 'first_div';
+        //             new_photo_imgdiv.className = 'second_div';
+        //             new_photo_link_a.className = 'photos-a';
+        //             new_photo_link_a.href = 'javascript:;';
+        //             new_photo_link_a.className = 'the_a';
+        //             new_photo_img.src = 'http://zjcuz.com/'+res.data.data[i].url;
+        //             new_photo_img.className = 'the_img';
+
+        //             new_photo_photosname_p.innerText = res.data.data[i].imgName;
+        //             new_photo_loadername_p.innerText = '';
+        //             new_photo_photoskind_p.innerText = res.data.data[i].imgCategory;
+
+        //             new_photo_photosname_p.setAttribute('id','first_p');
+        //             new_photo_loadername_p.className = 'second_p';
+        //             new_photo_photoskind_p.className = 'third_p';
+
+
+
+        //             new_photo_link_a.appendChild(new_photo_img);
+        //             new_photo_imgdiv.appendChild(new_photo_link_a);
+        //             new_photo_box_div.appendChild(new_photo_imgdiv);
+        //             new_photo_box_div.appendChild(new_photo_photosname_p);
+        //             new_photo_box_div.appendChild(new_photo_loadername_p);
+        //             new_photo_box_div.appendChild(new_photo_photoskind_p);
+
+        //             document.getElementById('photosbox').appendChild(new_photo_box_div);
+        //         } 
+        //     }
+        // })
+    </script>
+</body>
+</html>

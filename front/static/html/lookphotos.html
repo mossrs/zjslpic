@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浙江 · 诗路文化带</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="../js/three.min.js"></script>
+    <script src="../js/photo-sphere-viewer.min.js"></script>
+    <link rel="stylesheet" href="../css/headercss.css">
+    <link rel="stylesheet" href="../css/log_and_register.css">
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <style>
+        div a{
+            color: black;
+        }
+        .header-out{
+            position:fixed;
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .header-in{
+            position:fixed;
+            background-color: rgb(254, 254, 254);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .overlay{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+            display: none;
+        }
+        .overlay-display{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10000px;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+        }
+        .register_end_window{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 100px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+            display: none;
+        }
+        .register_end_window_display{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 100px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+        }
+        .button-close{
+            width: 18px;
+            height: 18px;
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-weight: 700;
+            line-height: 1;
+            text-decoration: none;
+            color: rgba(0,0,0,.43);
+            cursor: pointer;
+            border: 0;
+            background-color: white;
+        }
+        /* 输入栏提示词 */
+        .top_words{
+            float: right;
+            font-size: 10px;
+            margin-right: 6px;
+            color: #15dced;
+            visibility: hidden;
+        }
+        .photos-window-top{
+            padding-top: 30px;
+            text-align: center;
+            color: #15dced;
+        }
+        .photos-window-top h3{
+            display: inline-block;
+            padding: 10px;
+            margin-bottom: 30px;
+            border-bottom: #15dced 1px solid;
+        }
+        #imgimg{
+            border-radius: 10px;
+        }
+        #imgname{
+            font-size: 50px;
+            background-image: linear-gradient(135deg,#7ba5fb,#14ffe0);;
+            border-radius: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-bottom: 2px;
+            color: white;
+            display: inline-block;
+            line-height: 60px;
+        }
+    </style>
+</head>
+<body style="background-image: url(../imgs/background01.png); background-repeat:no-repeat;background-position: top center; background-attachment: fixed; background-size: 100% 100%;" id="body_hidden">
+    <div class="overlay" id="overlay"></div>
+    <div class="header" id="header">
+        <div class="header-left">
+            <a class="header-logo" href="#">浙东唐诗路</a>
+            <a class="header-logo" href="#">瓯江山水诗路</a>
+            <a class="header-logo" href="#">钱塘江诗路</a>
+            <a class="header-logo" href="#">大运河诗路</a>
+        </div>
+        <div class="header-right">
+            <a class="header-text" href="javascript:history.back(-1);" id="header-logo05">返回首页</a>
+        </div>
+    </div>
+    <div style="width: 100%; min-width: 1516px;">
+        <div style="height:120px;"></div>
+        <div class="tpt-login" style="height: 600px; width: 90%;">
+            <div style="border-radius: 10px; height: 600px; width: 1000px; background-color: #cccccc; display: inline-block;">
+                <a href="javascript:;">
+                    <!-- <img src="../imgs/parc-saint-pierre-amiens.jpg" alt="" id="imgimg" style="margin-left: -18px; align-self:center; display: inline-block;position: relative; top: 50%; left: 50%; transform: translate(-50%,-50%);"> -->
+                    <div id="container" style="position: relative; top: 50%; left: 50%; transform: translate(-50%,-50%); margin-top: -24px; border-radius: 10px;"></div>
+                    <script>
+                        // console.log('dddddddddddddddddddddddddddddddddddddddd');
+                        var img = document.getElementById('container');
+                            img.style.width = '97%';
+                            img.style.height = '92%';
+
+                    </script>
+                </a>
+            </div>
+            <div style="display: inline-block; margin-left: 50px; position: absolute;margin-top: 42px;">
+                <div style="margin-bottom: 100px;">
+                    <p id="imgname" style="max-width: 300px;">not-found</p>
+                </div>
+                <p style="color: rgb(136, 136, 136);">图片编号：</p><div style="margin-bottom: 30px; font-size: 20px;" id="username">not-found</div>
+                <p style="color: rgb(136, 136, 136);">地址：</p><div style="margin-bottom: 250px; font-size: 20px;" id="imgCategory">not-found</div>
+                <div style="color: rgb(136, 136, 136); border-top: rgb(136, 136, 136) solid 2px; width: 300px; padding-top: 5px;">· 体现浙江山水特色，彰显浙江文化内涵</div>
+            </div>
+        </div>
+        <div style="height:50px;"></div> 
+        <div style="background-image: linear-gradient(0deg,#dddddd,#ffffff); padding-bottom: 20px">
+            <div class="photos-window-top"><h3>更多精彩</h3></div>
+            <div style="width: 100%; min-width: 1516px;text-align: center; height: 100%; display: inline-block;">
+                <div style="min-width: 1100px; height: 100%; display: inline-block; margin: 10px 80px;" id="photosbox">
+                    <!-- 图片新增在这里 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var searchUrl = window.location.search;
+        console.log(searchUrl);
+        var searchData = searchUrl.split("=");
+        
+        function getParams(key) {
+        var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+        var r = encodeURI(searchUrl).substr(1).match(reg);
+        if (r != null) {
+        //将中文编码的字符重新变成中文
+        return decodeURI(unescape(r[2]));
+        }
+        return null;
+        }
+        data=getParams("photo");
+        console.log(data);
+        var searchData = data.split("=");
+        console.log(searchData[0]);
+
+        // var messagelist_all = location.search.slice(6);
+        // var messagelist = messagelist_all.split("=");
+        var photo = searchData[0];
+        var imgname = searchData[1];
+        var username = searchData[2];
+        var imgCategory = searchData[3];
+        document.getElementById('imgname').innerText = imgname;
+        document.getElementById('username').innerText = username;
+        document.getElementById('imgCategory').innerText = imgCategory;
+        // document.getElementById('imgimg').src = 'https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com' + photo;
+        
+        console.log(photo)
+        var div = document.getElementById('container');
+        var PSV = new PhotoSphereViewer({
+                panorama: 'https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com' + photo,
+                loading_msg:'',
+                anim_speed:'0.5rpm',
+                vertical_anim_speed:'0.5rpm',
+                container: div,
+                time_anim: 3000,
+                navbar: true,
+                navbar_style: {
+                    backgroundColor: 'rgba(58, 67, 77, 0.7)'
+                },
+            });
+        
+        // axios({
+        //     url:'http://1.117.80.52:8033/pic/photo/getPics',
+        //     method: 'GET'
+        // }).then(res =>{
+        //     console.log(res.data.data[0])
+        //     if(res.status==200){
+        //         for(var i=0; i<res.data.data.length; i++){
+        //             var new_photo_box_div = document.createElement('div');
+        //             var new_photo_link_a = document.createElement('a');
+        //             var new_photo_img = document.createElement('img');
+        //             var new_photo_imgdiv = document.createElement('div');
+        //             var new_photo_photosname_p = document.createElement('p');
+        //             var new_photo_loadername_p = document.createElement('p');
+        //             var new_photo_photoskind_p = document.createElement('p');
+        //             new_photo_box_div.className = 'first_div';
+        //             new_photo_imgdiv.className = 'second_div';
+        //             new_photo_link_a.className = 'photos-a';
+                    
+        //             new_photo_link_a.href = 'lookphotos.html?photo='+res.data.data[i]['url']+'='+res.data.data[i]['location']+'='+res.data.data[i]['id']+'='+res.data.data[i]['name']
+
+        //             new_photo_link_a.className = 'the_a';
+        //             new_photo_img.src = 'https://zjsl-1314394482.cos.ap-shanghai.myqcloud.com'+res.data.data[i]['url']
+        //             new_photo_img.className = 'the_img';
+
+        //             new_photo_photosname_p.innerText = res.data.data[i]['name']
+        //             new_photo_loadername_p.innerText = res.data.data[i]['id']
+        //             new_photo_photoskind_p.innerText = res.data.data[i]['location']
+
+        //             new_photo_photosname_p.setAttribute('id','first_p');
+        //             new_photo_loadername_p.className = 'second_p';
+        //             new_photo_photoskind_p.className = 'third_p';
+
+        //             new_photo_link_a.appendChild(new_photo_img);
+        //             new_photo_imgdiv.appendChild(new_photo_link_a);
+        //             new_photo_box_div.appendChild(new_photo_imgdiv);
+        //             new_photo_box_div.appendChild(new_photo_photosname_p);
+        //             new_photo_box_div.appendChild(new_photo_loadername_p);
+        //             new_photo_box_div.appendChild(new_photo_photoskind_p);
+
+        //             document.getElementById('photosbox').appendChild(new_photo_box_div);
+        //         } 
+        //     }
+        // })
+    </script>
+    <div class="footer" style="background-color: #4c4c4c; width: 100%; min-width: 1516px; border-bottom: #15dced solid 2px; box-shadow: 0 -6px 10px 0 rgb(23 44 45 / 60%);">
+        <div style="text-align: center;">
+            <div style="height: 8px; width:400px; border-radius: 4px; background-color: white; display: inline-block; margin-top: 15px;">
+            </div>
+        </div>
+        <div style="display: inline-block; padding: 25px 300px; display:flex;">
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.9;">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">走进诗路</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">浙东唐诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">瓯江山水诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">钱塘江诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">大运河诗路</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:1">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">用户空间</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">登陆须知</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">用户协议</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">诗路同行</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">创作平台</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">文风行纪</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">诗路详情</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">关于我们</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">联系我们</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">传送门</a>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        
+    </script>
+</body>
+</html>

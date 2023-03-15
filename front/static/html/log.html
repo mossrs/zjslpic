@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/headercss.css">
+    <link rel="stylesheet" href="../css/log_and_register.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>浙江 · 诗路文化带</title>
+    <style>
+        div a{
+            color: black;
+        }
+        .tpt-login {
+            width: 360px;
+            height: 310px;
+        }
+        .header-out{
+            position:fixed;
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .header-in{
+            position:fixed;
+            background-color: rgb(254, 254, 254);
+            width: 100%;
+            box-shadow: 0 2px 8px 0 rgb(23 44 45 / 20%);
+            z-index: 999;
+        }
+        .overlay{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+            display: none;
+        }
+        .overlay-display{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 10000px;
+            z-index: 1000;
+            background-color: rgb(0, 0, 0, 0.5);
+        }
+        .login_end_window{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 100px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+            display: none;
+        }
+        .login_end_window_display{
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 100px;
+            width: 300px;
+            background-color: white;
+            padding: 16px;
+            background: rgb(255, 255, 255);
+            border-radius: 10px;
+            margin: auto;
+            z-index: 1001;
+            overflow: auto;
+        }
+        .button-close{
+            width: 18px;
+            height: 18px;
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-weight: 700;
+            line-height: 1;
+            text-decoration: none;
+            color: rgba(0,0,0,.43);
+            cursor: pointer;
+            border: 0;
+            background-color: white;
+        }
+    </style>
+</head>
+<body style="background-image: url(../imgs/background01.png); background-repeat:no-repeat;background-position: top center; background-attachment: fixed; background-size: 100% 100%;" id="body_hidden">
+    <div class="overlay" id="overlay"></div>
+    <div class="login_end_window" id="login_failed_window_20020" style="position: fixed;">
+        <button id="button-close-20020" class="button-close"><span style="font-size: 25px;">×</span></button>
+        <div style="text-align: left; font-size: 14px;  color: rgb(122, 122, 122); margin-left: 5px;">登录失败</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 18px; font-weight: 600; color: rgb(61, 61, 61);">请重新输入！！！</div>
+    </div>
+    <div class="login_end_window" id="login_failed_window_40000" style="position: fixed;">
+        <button id="button-close-40000" class="button-close"><span style="font-size: 25px;">×</span></button>
+        <div style="text-align: left; font-size: 14px;  color: rgb(122, 122, 122); margin-left: 5px;">登录失败</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 18px; font-weight: 600; color: rgb(61, 61, 61);">客户端异常，请重试！！！</div>
+    </div>
+    <div class="login_end_window" id="login_failed_window_50000" style="position: fixed;">
+        <button id="button-close-50000" class="button-close"><span style="font-size: 25px;">×</span></button>
+        <div style="text-align: left; font-size: 14px;  color: rgb(122, 122, 122); margin-left: 5px;">登录失败</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 18px; font-weight: 600; color: rgb(61, 61, 61);">系统故障，请稍后再试！！！</div>
+    </div>
+    <div class="login_end_window" id="login_succeed_window_20021" style="position: fixed;">
+        <button id="button-close-20021" class="button-close"><span style="font-size: 25px;">×</span></button>
+        <div style="text-align: left; font-size: 14px;  color: rgb(122, 122, 122); margin-left: 5px;">登录成功</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 18px; font-weight: 600; color: rgb(61, 61, 61);">页面将在三秒后跳转...</div>
+    </div>
+    <div class="login_end_window" id="login_failed_window_59999" style="position: fixed;">
+        <button id="button-close-59999" class="button-close"><span style="font-size: 25px;">×</span></button>
+        <div style="text-align: left; font-size: 14px;  color: rgb(122, 122, 122); margin-left: 5px;">登录失败</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 18px; font-weight: 600; color: rgb(61, 61, 61);">服务器出现未知错误，请稍后再试！！！</div>
+    </div>
+    <div class="login_end_window" id="login_failed_window_message" style="position: fixed;">
+        <button id="button-close-message" class="button-close"><span style="font-size: 25px;">×</span></button>
+        <div style="text-align: left; font-size: 14px;  color: rgb(122, 122, 122); margin-left: 5px;">登录失败</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 18px; font-weight: 600; color: rgb(61, 61, 61);">请填写完整信息！</div>
+    </div>
+    <div class="header" id="header">
+        <div class="header-left">
+            <a class="header-logo" href="#">浙东唐诗路</a>
+            <a class="header-logo" href="#">瓯江山水诗路</a>
+            <a class="header-logo" href="#">钱塘江诗路</a>
+            <a class="header-logo" href="#">大运河诗路</a>
+        </div>
+        <div class="header-right">
+            <a class="header-text" href="../../index.html">首页</a>
+            <a class="header-myself" href="../html/log.html">登录</a>
+        </div>
+    </div>
+    <div style="height: 250px;"></div>
+    <div class="tpt-login">
+    <h2>用户登录</h2>
+        <input type="text" autocapitalize="off" placeholder="请输入账号" id="username">
+        <input type="password" name="password" placeholder="请输入密码" id="password">
+        <p>
+        <input type="checkbox" name="" id="read_and_agree" style="height:12px;margin:0; padding:0; width:12px;" checked> 我已阅读并同意
+        <a href="#" id="log_agree"> 会员登陆协议</a>
+        </p>
+        <button style="background-image: linear-gradient(135deg,#7ba5fb,#14ffe0);" id="log_now">立即登录</button>
+        <li style="color: rgb(0, 0, 0, 0.65);font-size: 14px;">还没有账号？<a href="../html/register.html">点击注册</a></li>
+    </div>
+    <div style="height:260px;"></div>
+    <div class="footer" style="background-color: #4c4c4c; width: 100%; min-width: 1516px; border-bottom: #15dced solid 2px; box-shadow: 0 -6px 10px 0 rgb(23 44 45 / 60%);">
+        <div style="text-align: center;">
+            <div style="height: 8px; width:400px; border-radius: 4px; background-color: white; display: inline-block; margin-top: 15px;">
+            </div>
+        </div>
+        <div style="display: inline-block; padding: 25px 300px; display:flex;">
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.9;">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">走进诗路</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">浙东唐诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">瓯江山水诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">钱塘江诗路</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">大运河诗路</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:1">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">用户空间</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">登陆须知</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">用户协议</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">诗路同行</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">创作平台</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">文风行纪</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">诗路详情</a>
+                </ul>
+            </div>
+            <div style="display: inline-block; background-color: white; border-radius: 8px; width: 200px; padding-bottom: 20px; margin: 0px 20px; flex:0.7">
+                <span style="font-weight: 500; color: rgb(255, 255, 255); font-size: 15px; background-image: linear-gradient(135deg,#7ba5fb,#14ffe0); border-radius: 5px; padding: 2px 8px; margin: 5px; display: inline-block; width: 100px;">关于我们</span>
+                <ul style="margin-left: 10px;">
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">联系我们</a>
+                    <br>
+                    <a href="javascript:;" style="font-size: 14px; font-weight: 300; color: rgb(41, 41, 41);">传送门</a>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        var header = document.getElementById("header");
+        var overlay = document.getElementById("overlay");
+        window.onscroll=function(){
+		    //获取滚动条位置
+            var jhlheight=document.documentElement.scrollTop||document.body.scrollTop
+            //判断滚动条位置
+            if(jhlheight>=100){
+                header.className = "header-out"
+            }else{
+                header.className = "header-in"
+            }
+        }
+        document.getElementById("log_agree").onclick = function(){
+            alert("此链接跳转用户登录协议！")
+        }
+        document.getElementById("log_now").onclick = function(){
+            if(!document.getElementById("read_and_agree").checked){
+                alert("你必须同意协议");
+            }else{
+                if(document.getElementById("username").value!=''&&document.getElementById("password").value!=''){
+                    
+                    axios({
+                        method: 'POST',
+                        url: 'http://1.117.80.52:8033/pic/user/login',
+                        data: {
+                            username: document.getElementById("username").value,
+                            password: document.getElementById("password").value
+                        }
+                    })
+                    .then(res =>{
+                        console.log(res)
+                        document.getElementById("body_hidden").style.overflow = "hidden"
+                        overlay.className = "overlay-display"
+                        window.scrollTo({     //设置滚动条位置
+                            top:0,            //回到顶部
+                            behavior:"smooth"   //平滑过渡  
+                        })
+                        if(res.status==200){
+                            if(res.data.data.isAdmin==false)
+                            {
+                                document.getElementById("username").innerText = ''
+                                document.getElementById("password").innerText = ''
+
+                                window.location.href='index_login_after.html?users='+res.data.data.id;
+                            }
+                            else
+                            {
+                                document.getElementById("username").innerText = ''
+                                document.getElementById("password").innerText = ''
+                                window.location.href='master.html';
+
+                            }
+                        }
+                    })
+                }else{
+                    document.getElementById("body_hidden").style.overflow = "hidden"
+                    overlay.className = "overlay-display"
+                    window.scrollTo({     //设置滚动条位置
+                        top:0,            //回到顶部
+                        behavior:"smooth"   //平滑过渡  
+                    })
+                    document.getElementById("login_failed_window_message").className = "login_end_window_display"
+                    document.getElementById("button-close-message").onclick = function(){
+                        document.getElementById("login_failed_window_message").className = "login_end_window"
+                        overlay.className = "overlay"
+                        body_hidden.style.overflow = "auto"
+                    }
+                }
+            }
+        }
+        
+    </script>
+</body>
+</html>
